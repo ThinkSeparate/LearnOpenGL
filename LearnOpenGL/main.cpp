@@ -15,25 +15,32 @@ const char* vertexShaderSource =
 // in声明输入属性，即通过程序逻辑传递给GPU；layout (location = 0)用于在传递数值的时候定位属性的位置
 // vec3是vector变量，有3个元素
 "layout (location = 0) in vec3 aPos;\n"
+// 声明一个位置为1的颜色输入
+"layout (location = 1) in vec3 aColor;\n"
+"\n"
+// 向片段着色器输出一个颜色
+"out vec3 ourColor;\n"
 "\n"
 // mian函数是着色器程序的入口函数
 "void main()\n"
 "{\n"
 // 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   ourColor = aColor;\n"
 "}\0";
 const char* fragmentShaderSource = 
 "#version 330 core\n"
 // out定义输出值，即传递给下一个渲染步骤的值
 "out vec4 FragColor;\n"
 "\n"
-// 接受顶点着色器传过来的颜色
-"uniform vec4 ourColor;\n"
+// 接受顶点着色器的输入
+"in vec3 ourColor;\n"
 "\n"
 "void main()\n"
 "{\n"
 // OpenGL的rgba值为float类型，数值在0-1之间
-"   FragColor = ourColor;\n"
+// glsl的变量支持组合，分量使用等操作
+"   FragColor = vec4(ourColor, 1.0);\n"
 "}\n\0";
 
 int main() {
@@ -67,10 +74,10 @@ int main() {
 	framebuffer_size_callback(window, 800, 600);
 
 	float vertices[] = {
-		0.5f, 0.5f, 0.0f,   // 右上角
-		0.5f, -0.5f, 0.0f,  // 右下角
-		-0.5f, -0.5f, 0.0f, // 左下角
-		-0.5f, 0.5f, 0.0f   // 左上角
+		// 位置              // 颜色
+		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
+		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
 	};
 
 	unsigned int indices[] = { // 注意索引从0开始! 
@@ -153,9 +160,12 @@ int main() {
 
 	// 链接顶点属性
 	// （要配置的顶点属性layout(location = 0)， 顶点属性的大小， 顶点属性的类型，步长（一个顶点属性的长度），偏移量（该属性在一个顶点数据中的起始位置））
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	// 以顶点属性位置为参数启用顶点属性(location = 0)；顶点属性默认禁用
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// 使用线框模式绘制
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -179,24 +189,11 @@ int main() {
 		// 使用着色器
 		glUseProgram(shaderProgram);
 
-		// 获得gl运行时间
-		float timeValue = glfwGetTime();
-		// 使用sin函数改变green指
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		// 获得需要传入属性的位置
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		// 传入属性，这个方法必须在glUseProgram方法后使用，4是指传入数据的个数，f是数据的类型
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
 		// 绑定顶点数组
-		//glBindVertexArray(VAO);
+		glBindVertexArray(VAO);
 		// 绘制三角形
 		// （OpenGL图元， 顶点数组的起始索引，绘制顶点个数）
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		// (OpenGL图元，绘制顶点个数，索引类型，起始索引的位置)
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
