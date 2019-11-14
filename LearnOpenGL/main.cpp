@@ -5,43 +5,12 @@
 //----包含系统库文件
 #include <iostream>
 
+//----包含自定义类
+#include "Shader.h"	// 引用shader类
+
 //----声明函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-
-const char* vertexShaderSource = 
-// 使用OpenGL3.3版本，模式是核心渲染模式
-"#version 330 core\n"
-// in声明输入属性，即通过程序逻辑传递给GPU；layout (location = 0)用于在传递数值的时候定位属性的位置
-// vec3是vector变量，有3个元素
-"layout (location = 0) in vec3 aPos;\n"
-// 声明一个位置为1的颜色输入
-"layout (location = 1) in vec3 aColor;\n"
-"\n"
-// 向片段着色器输出一个颜色
-"out vec3 ourColor;\n"
-"\n"
-// mian函数是着色器程序的入口函数
-"void main()\n"
-"{\n"
-// 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"   ourColor = aColor;\n"
-"}\0";
-const char* fragmentShaderSource = 
-"#version 330 core\n"
-// out定义输出值，即传递给下一个渲染步骤的值
-"out vec4 FragColor;\n"
-"\n"
-// 接受顶点着色器的输入
-"in vec3 ourColor;\n"
-"\n"
-"void main()\n"
-"{\n"
-// OpenGL的rgba值为float类型，数值在0-1之间
-// glsl的变量支持组合，分量使用等操作
-"   FragColor = vec4(ourColor, 1.0);\n"
-"}\n\0";
 
 int main() {
 
@@ -85,59 +54,7 @@ int main() {
 		1, 2, 3  // 第二个三角形
 	};
 
-	// 生成顶点着色器对象
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	// 绑定顶点着色器源码到顶点着色器对象上
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	// 编译顶点着色器
-	glCompileShader(vertexShader);
-
-	int success;
-	char infoLog[512];
-
-	// 获取顶点着色器编译状态
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	// 生成片段着色器
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// 绑定片段着色器源码到片段着色器对象
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	// 编译片段着色器
-	glCompileShader(fragmentShader);
-
-	// 获取片段着色器编译状态
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	// 生成着色器程序对象
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	// 绑定着色器对象到着色器程序上
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	// 链接着色器
-	glLinkProgram(shaderProgram);
-
-	// 获取着色器程序链接状态
-	glGetShaderiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
-	}
-
-	// 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	Shader shader("vertex.glsl", "fragment.glsl");
 
 	unsigned int VBO, VAO, EBO;
 	// 生成VAO对象
@@ -187,7 +104,7 @@ int main() {
 
 		// 渲染
 		// 使用着色器
-		glUseProgram(shaderProgram);
+		shader.use();
 
 		// 绑定顶点数组
 		glBindVertexArray(VAO);
