@@ -62,9 +62,15 @@ int main() {
 	framebuffer_size_callback(window, 800, 600);
 
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		0.5f, 0.5f, 0.0f,   // 右上角
+		0.5f, -0.5f, 0.0f,  // 右下角
+		-0.5f, -0.5f, 0.0f, // 左下角
+		-0.5f, 0.5f, 0.0f   // 左上角
+	};
+
+	unsigned int indices[] = { // 注意索引从0开始! 
+		0, 1, 3, // 第一个三角形
+		1, 2, 3  // 第二个三角形
 	};
 
 	// 生成顶点着色器对象
@@ -121,11 +127,13 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
 	// 生成VAO对象
 	glGenVertexArrays(1, &VAO);
 	// 生成VBO对象
 	glGenBuffers(1, &VBO);
+	// 生成VEO对象
+	glGenBuffers(1, &EBO);
 
 	// 绑定VAO
 	glBindVertexArray(VAO);
@@ -134,11 +142,18 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	// 绑定VEO，并把数据复制到缓冲
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	// 链接顶点属性
 	// （要配置的顶点属性layout(location = 0)， 顶点属性的大小， 顶点属性的类型，步长（一个顶点属性的长度），偏移量（该属性在一个顶点数据中的起始位置））
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	// 以顶点属性位置为参数启用顶点属性(location = 0)；顶点属性默认禁用
 	glEnableVertexAttribArray(0);
+
+	// 使用线框模式绘制
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// 在每次循环渲染之前检查是否需要退出
 	while (!glfwWindowShouldClose(window))
@@ -154,10 +169,14 @@ int main() {
 		// 使用着色器
 		glUseProgram(shaderProgram);
 		// 绑定顶点数组
-		glBindVertexArray(VAO);
+		//glBindVertexArray(VAO);
 		// 绘制三角形
 		// （OpenGL图元， 顶点数组的起始索引，绘制顶点个数）
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		// (OpenGL图元，绘制顶点个数，索引类型，起始索引的位置)
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
