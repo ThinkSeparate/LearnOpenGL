@@ -16,16 +16,11 @@ const char* vertexShaderSource =
 // vec3是vector变量，有3个元素
 "layout (location = 0) in vec3 aPos;\n"
 "\n"
-// 为片段着色器指定一个颜色输出
-"out vec4 vertexColor;\n"
-"\n"
 // mian函数是着色器程序的入口函数
 "void main()\n"
 "{\n"
 // 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-// 指定输出颜色为暗红色
-"	vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
 "}\0";
 const char* fragmentShaderSource = 
 "#version 330 core\n"
@@ -33,12 +28,12 @@ const char* fragmentShaderSource =
 "out vec4 FragColor;\n"
 "\n"
 // 接受顶点着色器传过来的颜色
-"in vec4 vertexColor;\n"
+"uniform vec4 ourColor;\n"
 "\n"
 "void main()\n"
 "{\n"
 // OpenGL的rgba值为float类型，数值在0-1之间
-"   FragColor = vertexColor;\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
 
 int main() {
@@ -183,6 +178,16 @@ int main() {
 		// 渲染
 		// 使用着色器
 		glUseProgram(shaderProgram);
+
+		// 获得gl运行时间
+		float timeValue = glfwGetTime();
+		// 使用sin函数改变green指
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		// 获得需要传入属性的位置
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		// 传入属性，这个方法必须在glUseProgram方法后使用，4是指传入数据的个数，f是数据的类型
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
 		// 绑定顶点数组
 		//glBindVertexArray(VAO);
 		// 绘制三角形
