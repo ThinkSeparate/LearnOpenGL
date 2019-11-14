@@ -15,20 +15,30 @@ const char* vertexShaderSource =
 // in声明输入属性，即通过程序逻辑传递给GPU；layout (location = 0)用于在传递数值的时候定位属性的位置
 // vec3是vector变量，有3个元素
 "layout (location = 0) in vec3 aPos;\n"
+"\n"
+// 为片段着色器指定一个颜色输出
+"out vec4 vertexColor;\n"
+"\n"
 // mian函数是着色器程序的入口函数
 "void main()\n"
 "{\n"
 // 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+// 指定输出颜色为暗红色
+"	vertexColor = vec4(0.5, 0.0, 0.0, 1.0);\n"
 "}\0";
 const char* fragmentShaderSource = 
 "#version 330 core\n"
 // out定义输出值，即传递给下一个渲染步骤的值
 "out vec4 FragColor;\n"
+"\n"
+// 接受顶点着色器传过来的颜色
+"in vec4 vertexColor;\n"
+"\n"
 "void main()\n"
 "{\n"
 // OpenGL的rgba值为float类型，数值在0-1之间
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = vertexColor;\n"
 "}\n\0";
 
 int main() {
@@ -154,6 +164,11 @@ int main() {
 
 	// 使用线框模式绘制
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	// 查询可以使用的最大顶点属性个数
+	int nrAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
 	// 在每次循环渲染之前检查是否需要退出
 	while (!glfwWindowShouldClose(window))
