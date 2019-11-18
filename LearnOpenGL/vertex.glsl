@@ -5,9 +5,13 @@
 layout (location = 0) in vec3 aPos;
 // 声明一个位置为1的颜色输入
 layout (location = 1) in vec3 aColor;
+// 声明一个位置为2的贴图坐标
+layout (location = 2) in vec2 aTexCoord;
 
 // 向片段着色器输出一个颜色
 out vec3 ourColor;
+// 向片段着色器输出一个贴图坐标
+out vec2 TexCoord;
 
 // mian函数是着色器程序的入口函数
 void main()
@@ -15,4 +19,5 @@ void main()
 	// 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
 	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 	ourColor = aColor;
+	TexCoord = aTexCoord;
 };

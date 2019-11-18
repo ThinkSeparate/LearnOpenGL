@@ -16,6 +16,9 @@
     <Filter Include="shader">
       <UniqueIdentifier>{b57f56b4-80d7-47e4-95ba-5a295bdfe21d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="texture">
+      <UniqueIdentifier>{26acb905-4adf-4847-b47e-257ad708cae7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Desktop\OpenGL\glad\src\glad.c">
@@ -25,6 +28,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,5 +46,10 @@
     <ClInclude Include="Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="wall.jpg">
+      <Filter>texture</Filter>
+    </Image>
   </ItemGroup>
 </Project>

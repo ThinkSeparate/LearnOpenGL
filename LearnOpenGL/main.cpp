@@ -1,6 +1,7 @@
 //----包含需要的外部库文件
 #include <glad/glad.h>	// 用来管理OpenGL函数指针
 #include <GLFW/glfw3.h>	// glfw3，包含了OpenGL的库使用
+#include <stb-master\stb_image.h> // 图片加载库
 
 //----包含系统库文件
 #include <iostream>
@@ -43,16 +44,49 @@ int main() {
 	framebuffer_size_callback(window, 800, 600);
 
 	float vertices[] = {
-		// 位置              // 颜色
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
+		//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
 	};
 
 	unsigned int indices[] = { // 注意索引从0开始! 
 		0, 1, 3, // 第一个三角形
 		1, 2, 3  // 第二个三角形
 	};
+
+	// 加载墙的图片
+	int width, height, nrChannels;
+	unsigned char* data1 = stbi_load("wall.jpg", &width, &height, &nrChannels, 0);
+
+	// 生成纹理对象
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	// 绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	// 为当前绑定的纹理对象设置环绕、过滤方式
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	if (data1) {
+		// 生成纹理
+		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+		// 生成多级渐变纹理
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
+	// 释放图像内存
+	stbi_image_free(data1);
 
 	Shader shader("vertex.glsl", "fragment.glsl");
 
@@ -77,12 +111,15 @@ int main() {
 
 	// 链接顶点属性
 	// （要配置的顶点属性layout(location = 0)， 顶点属性的大小， 顶点属性的类型，步长（一个顶点属性的长度），偏移量（该属性在一个顶点数据中的起始位置））
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	// 以顶点属性位置为参数启用顶点属性(location = 0)；顶点属性默认禁用
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	// 使用线框模式绘制
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -106,11 +143,13 @@ int main() {
 		// 使用着色器
 		shader.use();
 
+		// 绑定纹理
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		// 绑定顶点数组
 		glBindVertexArray(VAO);
 		// 绘制三角形
 		// （OpenGL图元， 顶点数组的起始索引，绘制顶点个数）
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);

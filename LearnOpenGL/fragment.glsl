@@ -4,10 +4,14 @@ out vec4 FragColor;
 
 // 接受顶点着色器的输入
 in vec3 ourColor;
+in vec2 TexCoord;
+
+// 接受一个纹理输入,sampler2D是2d纹理类型
+uniform sampler2D ourTexture;
 
 void main()
 {
 	// OpenGL的rgba值为float类型，数值在0-1之间
 	// glsl的变量支持组合，分量使用等操作
-	FragColor = vec4(ourColor, 1.0);
+	FragColor = texture(ourTexture, TexCoord);
 };
