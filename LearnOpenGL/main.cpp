@@ -2,12 +2,16 @@
 #include <glad/glad.h>	// 用来管理OpenGL函数指针
 #include <GLFW/glfw3.h>	// glfw3，包含了OpenGL的库使用
 #include <stb-master\stb_image.h> // 图片加载库
+#include <glm/glm.hpp>	// 引用OpenGL变换相关的库文件，glm是OpenGL Mathematics的缩写
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
 
 //----包含系统库文件
 #include <iostream>
 
 //----包含自定义类
 #include "Shader.h"	// 引用shader类
+#include "TechnologyTest.h"	// 自定义的技术测试类：学习中需要使用很多新技术，测试性代码放在这个类里实现
 
 //----声明函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -149,13 +153,11 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	// 使用线框模式绘制
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// 技术测试
+	TechnologyTest technologyTest;
+	technologyTest.testAll();
 
-	// 查询可以使用的最大顶点属性个数
-	int nrAttributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
-	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
 
 	// 在每次循环渲染之前检查是否需要退出
 	while (!glfwWindowShouldClose(window))
@@ -171,6 +173,12 @@ int main() {
 		// 使用着色器
 		shader.use();
 
+		// 绑定纹理并绘制
+		glm::mat4 trans;
+		// 让矩阵随时间旋转，角度使用的是弧度
+		trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+		shader.setMatrix4("transform", glm::value_ptr(trans));
 		// 手动设置纹理绑定
 		shader.setInt("ourTexture1", 0);
 		shader.setInt("ourTexture2", 1);

@@ -13,11 +13,13 @@ out vec3 ourColor;
 // 向片段着色器输出一个贴图坐标
 out vec2 TexCoord;
 
+uniform mat4 transform;
+
 // mian函数是着色器程序的入口函数
 void main()
 {
 	// 顶点着色器的输出内容必须有gl_Position；这个值将用于渲染的下一步骤
-	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	gl_Position = transform * vec4(aPos, 1.0f);
 	ourColor = aColor;
 	TexCoord = aTexCoord;
 };
