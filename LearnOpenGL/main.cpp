@@ -13,6 +13,10 @@
 #include "Shader.h"	// 引用shader类
 #include "TechnologyTest.h"	// 自定义的技术测试类：学习中需要使用很多新技术，测试性代码放在这个类里实现
 
+//----声明常量
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
 //----声明函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -45,7 +49,7 @@ int main() {
 	// 渲染窗口，左下角坐标（0， 0），宽高（800，600）
 	// OpenGl的坐标范围（-1，1），此处映射到（800，600）
 	//glViewport(0, 0, 800, 600);
-	framebuffer_size_callback(window, 800, 600);
+	framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
 
 	float vertices[] = {
 		//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
@@ -157,8 +161,6 @@ int main() {
 	TechnologyTest technologyTest;
 	technologyTest.testAll();
 
-
-
 	// 在每次循环渲染之前检查是否需要退出
 	while (!glfwWindowShouldClose(window))
 	{
@@ -173,14 +175,25 @@ int main() {
 		// 使用着色器
 		shader.use();
 
+		//创建模型矩阵
+		glm::mat4 model;
+		// 将模型以x轴旋转-55度
+		model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		
+		// 创建观察矩阵
+		glm::mat4 view;
+		// 反向移动观察矩阵，即将模型远离摄像机
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+		// 创建投影矩阵
+		glm::mat4 projection;
+		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+		// 将矩阵传入顶点着色器，计算顶点坐标
+		shader.setMatrix4("model", glm::value_ptr(model));
+		shader.setMatrix4("view", glm::value_ptr(view));
+		shader.setMatrix4("projection", glm::value_ptr(projection));
 		// 绑定纹理并绘制
-		glm::mat4 trans;
-		// 让矩阵随时间旋转，角度使用的是弧度
-		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-		// glfwGetTime获取gl运行时间，是一个累计量
-		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-		shader.setMatrix4("transform", glm::value_ptr(trans));
-		// 手动设置纹理绑定
 		shader.setInt("ourTexture1", 0);
 		shader.setInt("ourTexture2", 1);
 
