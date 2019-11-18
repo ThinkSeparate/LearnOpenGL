@@ -61,7 +61,7 @@ int main() {
 	unsigned char* data1 = stbi_load("wall.jpg", &width, &height, &nrChannels, 0);
 
 	// 生成纹理对象
-	unsigned int texture1;
+	unsigned int texture1, texture2;
 	glGenTextures(1, &texture1);
 	// 绑定纹理
 	glActiveTexture(GL_TEXTURE0);
@@ -85,8 +85,36 @@ int main() {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 
+	// 翻转y轴
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data2 = stbi_load("awesomeface.png", &width, &height, &nrChannels, 0);
+
+	glGenTextures(1, &texture2);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	// 为当前绑定的纹理对象设置环绕、过滤方式
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	if (data2) {
+		// 生成纹理
+		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		// 生成多级渐变纹理
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
 	// 释放图像内存
 	stbi_image_free(data1);
+	stbi_image_free(data2);
 
 	Shader shader("vertex.glsl", "fragment.glsl");
 
@@ -143,8 +171,10 @@ int main() {
 		// 使用着色器
 		shader.use();
 
-		// 绑定纹理
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		// 手动设置纹理绑定
+		shader.setInt("ourTexture1", 0);
+		shader.setInt("ourTexture2", 1);
+
 		// 绑定顶点数组
 		glBindVertexArray(VAO);
 		// 绘制三角形
