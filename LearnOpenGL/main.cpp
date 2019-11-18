@@ -176,8 +176,9 @@ int main() {
 		// 绑定纹理并绘制
 		glm::mat4 trans;
 		// 让矩阵随时间旋转，角度使用的是弧度
-		trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+		// glfwGetTime获取gl运行时间，是一个累计量
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 		shader.setMatrix4("transform", glm::value_ptr(trans));
 		// 手动设置纹理绑定
 		shader.setInt("ourTexture1", 0);
