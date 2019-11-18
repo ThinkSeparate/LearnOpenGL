@@ -13,5 +13,5 @@ void main()
 {
 	// OpenGL的rgba值为float类型，数值在0-1之间
 	// glsl的变量支持组合，分量使用等操作
-	FragColor = texture(ourTexture, TexCoord);
+	FragColor = texture(ourTexture, TexCoord) * vec4(ourColor, 1.0);
 };
