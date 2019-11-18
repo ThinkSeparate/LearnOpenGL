@@ -101,6 +101,19 @@ int main() {
 		1, 2, 3  // 第二个三角形
 	};
 
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	// 加载墙的图片
 	int width, height, nrChannels;
 	unsigned char* data1 = stbi_load("wall.jpg", &width, &height, &nrChannels, 0);
@@ -215,11 +228,6 @@ int main() {
 		// 渲染
 		// 使用着色器
 		shader.use();
-
-		//创建模型矩阵
-		glm::mat4 model;
-		// 将模型以x轴旋转-55度
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 		
 		// 创建观察矩阵
 		glm::mat4 view;
@@ -231,7 +239,7 @@ int main() {
 		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		// 将矩阵传入顶点着色器，计算顶点坐标
-		shader.setMatrix4("model", glm::value_ptr(model));
+		
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
 		// 绑定纹理并绘制
@@ -242,8 +250,18 @@ int main() {
 		glBindVertexArray(VAO);
 		// 绘制三角形
 		// （OpenGL图元， 顶点数组的起始索引，绘制顶点个数）
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < 10; i++) {
+			//创建模型矩阵
+			glm::mat4 model;
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			// 将模型以x轴旋转-55度
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
+			shader.setMatrix4("model", glm::value_ptr(model));
 
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+	
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
 		// 检查出发事件、更新窗口状态；并调用回调函数
