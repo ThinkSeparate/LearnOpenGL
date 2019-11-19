@@ -228,11 +228,27 @@ int main() {
 		// 渲染
 		// 使用着色器
 		shader.use();
-		
-		// 创建观察矩阵
+
+		// 设置摄像机位置
+		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+		// 设置摄像机方向
+		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+		// 设置摄像机右轴：使用叉乘
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+		// 设置摄像机上轴
+		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+
+		// 创建观察矩阵(摄像机)
 		glm::mat4 view;
-		// 反向移动观察矩阵，即将模型远离摄像机
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		// 使用（摄像机位置，摄像机观察方向，摄像机的向上向量）
+		float radius = 10.0f;
+		float camX = sin(glfwGetTime()) * radius;
+		float camZ = cos(glfwGetTime()) * radius;
+		view = glm::lookAt(glm::vec3(camX, 0.0, camZ),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f));
 
 		// 创建投影矩阵
 		glm::mat4 projection;
