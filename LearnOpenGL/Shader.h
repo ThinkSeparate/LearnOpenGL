@@ -16,7 +16,7 @@ public:
 	// const关键字 不可修改
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
 	// 使用/激活程序
-	void use();
+	void Use();
 	// uniform工具函数
 	void setBool(const std::string& name, bool value1) const;
 	void setBool(const std::string& name, bool value1, bool value2) const;

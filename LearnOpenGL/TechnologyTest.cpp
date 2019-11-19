@@ -1,19 +1,19 @@
 #include "TechnologyTest.h"
 
-void TechnologyTest::testAll()
+void TechnologyTest::TestAll()
 {
 	//testPolygonMode();
-	testMaxVertexAttribs();
-	testMatrix();
+	TestMaxVertexAttribs();
+	TestMatrix();
 }
 
-void TechnologyTest::testPolygonMode()
+void TechnologyTest::TestPolygonMode()
 {
 	// 使用线框模式绘制
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void TechnologyTest::testMaxVertexAttribs()
+void TechnologyTest::TestMaxVertexAttribs()
 {
 	// 查询可以使用的最大顶点属性个数
 	int nrAttributes;
@@ -21,7 +21,7 @@ void TechnologyTest::testMaxVertexAttribs()
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 }
 
-void TechnologyTest::testMatrix()
+void TechnologyTest::TestMatrix()
 {
 	/*	glm测试代码	*/
 	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);

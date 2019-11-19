@@ -11,10 +11,10 @@
 class TechnologyTest
 {
 public:
-	void testAll();
+	void TestAll();
 private:
-	void testPolygonMode();
-	void testMaxVertexAttribs();
-	void testMatrix();
+	void TestPolygonMode();
+	void TestMaxVertexAttribs();
+	void TestMatrix();
 };
 
