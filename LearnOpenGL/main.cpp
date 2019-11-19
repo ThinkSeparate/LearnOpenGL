@@ -28,6 +28,9 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 // 设置摄像机上轴
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+// 这两个变量用来解决每帧时间问题
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
 
 int main() {
 
@@ -222,6 +225,11 @@ int main() {
 	// 在每次循环渲染之前检查是否需要退出
 	while (!glfwWindowShouldClose(window))
 	{
+		// 更新当前帧时间
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		// 输入
 		processInput(window);
 
@@ -284,8 +292,8 @@ int main() {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	// 定义摄像机移动
-	float cameraSpeed = 0.05f;
+	// 定义摄像机移动, 保证不同帧率的机器，移速一样
+	float cameraSpeed = 2.5f * deltaTime;
 	// w键，向前移动
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cameraPos += cameraSpeed * cameraFront;
