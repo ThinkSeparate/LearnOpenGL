@@ -2,6 +2,10 @@
 
 #include <glad\glad.h>
 
+#include <glm/glm.hpp>	// 引用OpenGL变换相关的库文件，glm是OpenGL Mathematics的缩写
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm\gtc\type_ptr.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,6 +30,7 @@ public:
 	void setInt(const std::string& name, int value1, int value2) const;
 	void setInt(const std::string& name, int value1, int value2, int value3) const;
 	void setInt(const std::string& name, int value1, int value2, int value3, int value4) const;
+	void setFloat(const std::string& name, glm::vec3 value) const;
 	void setFloat(const std::string& name, float value1) const;
 	void setFloat(const std::string& name, float value1, float value2) const;
 	void setFloat(const std::string& name, float value1, float value2, float value3) const;
