@@ -25,7 +25,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //----定义全局变量
-Camera camera(glm::vec3(1.0f, 1.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 // 这两个变量用来解决每帧时间问题
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
@@ -269,7 +269,7 @@ int main() {
 
 		// 处理灯的位置
 		glm::mat4 model;
-		model = glm::mat4();
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f));
 
@@ -288,6 +288,7 @@ int main() {
 		shader.setFloat("objectColor", 1.0f, 0.5f, 0.31f);
 		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
 		shader.setFloat("lightPos", lightPos);
+		shader.setFloat("viewPos", camera.getPosition());
 		// 绑定纹理并绘制
 		shader.setInt("ourTexture1", 0);
 		shader.setInt("ourTexture2", 1);
@@ -295,7 +296,7 @@ int main() {
 		// 将矩阵传入顶点着色器，计算顶点坐标
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
-		model = glm::mat4();
+		model = glm::mat4(1.0f);
 		shader.setMatrix4("model", glm::value_ptr(model));
 
 		// 绑定顶点数组

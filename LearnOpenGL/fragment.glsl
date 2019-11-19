@@ -7,6 +7,7 @@ uniform vec3 objectColor;
 uniform vec3 lightColor;
 
 uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -27,7 +28,17 @@ void main()
 	float ambientStrength = 0.1f;
 	vec3 ambient = ambientStrength * lightColor;
 
-	vec3 result = (ambient + diffuse) * objectColor;
+	// 加入高光
+	float specularStrength = 0.5f;
+	vec3 viewDir = normalize(viewPos - FragPos);
+	// reflect函数（从光源指向片段的向量，法向量）
+	vec3 reflectDir = reflect(-lightDir, norm);
+	// 计算镜面分量
+	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	FragColor = vec4(result, 1.0f);
 };

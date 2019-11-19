@@ -27,6 +27,7 @@ public:
 	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 	// 可以获得观察矩阵
 	float getZoom();
+	glm::vec3 getPosition();
 	// 可以获得观察矩阵
 	glm::mat4 getViewMatrix();
 	// 键盘控制
