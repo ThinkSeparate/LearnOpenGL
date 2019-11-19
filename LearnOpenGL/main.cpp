@@ -20,6 +20,8 @@ const unsigned int SCR_HEIGHT = 600;
 //----声明函数
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //----定义全局变量
 // 设置摄像机位置
@@ -31,6 +33,15 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 // 这两个变量用来解决每帧时间问题
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
+// 用来计算鼠标的偏移量，初始值设置为屏幕中心
+float lastX = SCR_WIDTH/2.0f, lastY = SCR_HEIGHT/2.0f;
+// 定义摄像机的三个欧拉角
+float yaw = -90.0f;
+float pitch = 0;
+float roll = 0;
+float fov = 45.0f;
+// 声明一个变量，用来解决第一次进入窗口，偏移量计算过大问题
+bool firstMouse = true;
 
 int main() {
 
@@ -252,7 +263,7 @@ int main() {
 
 		// 创建投影矩阵
 		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
 		// 将矩阵传入顶点着色器，计算顶点坐标
 		
@@ -290,6 +301,14 @@ int main() {
 }
 
 void processInput(GLFWwindow* window) {
+	// 隐藏光标并捕捉他（如果你发现鼠标不见了）
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	// 监听鼠标操作
+	glfwSetCursorPosCallback(window, mouse_callback);
+
+	// 滚轮监听
+	glfwSetScrollCallback(window, scroll_callback);
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	// 定义摄像机移动, 保证不同帧率的机器，移速一样
@@ -310,6 +329,56 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
+}
+
+// 鼠标事件
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse) // 这个bool变量初始时是设定为true的
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	// 计算偏移量
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos;	// 注意这里是相反的，因为y坐标是从底部往顶部依次增大的
+	// 更新上一次的鼠标位置
+	lastX = xpos;
+	lastY = ypos;
+
+	// 定义灵敏度，并用灵敏度修改偏移量
+	float sensitivity = 0.05f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+	// 更新欧拉角
+	yaw += xoffset;
+	pitch += yoffset;
+	// 检查欧拉角，使之不能超过逻辑范围
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+	// 通过俯仰角和偏航角计算摄像机真正的方向向量
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	// 更新fov
+	if (fov >= 1.0f && fov <= 45.0f) {
+		fov -= yoffset;
+	}
+	// 保证视角范围
+	if (fov <= 1.0f)
+		fov = 1.0f;
+	if (fov >= 45.0f)
+		fov = 45.0f;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
