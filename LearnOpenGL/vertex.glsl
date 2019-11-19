@@ -3,15 +3,6 @@
 // in声明输入属性，即通过程序逻辑传递给GPU；layout (location = 0)用于在传递数值的时候定位属性的位置
 // vec3是vector变量，有3个元素
 layout (location = 0) in vec3 aPos;
-// 声明一个位置为1的颜色输入
-layout (location = 1) in vec3 aColor;
-// 声明一个位置为2的贴图坐标
-layout (location = 2) in vec2 aTexCoord;
-
-// 向片段着色器输出一个颜色
-out vec3 ourColor;
-// 向片段着色器输出一个贴图坐标
-out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -24,6 +15,4 @@ void main()
 	// gl_Position应该为标准化设备坐标（-1，1），超出此范围的顶点将会被舍弃
 	// 矩阵乘法从右向左读
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
-	ourColor = aColor;
-	TexCoord = aTexCoord;
 };

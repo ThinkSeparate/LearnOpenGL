@@ -25,7 +25,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //----定义全局变量
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(1.0f, 1.0f, 3.0f));
 // 这两个变量用来解决每帧时间问题
 float deltaTime = 0.0f; // 当前帧与上一帧的时间差
 float lastFrame = 0.0f; // 上一帧的时间
@@ -33,6 +33,9 @@ float lastFrame = 0.0f; // 上一帧的时间
 float lastX = SCR_WIDTH/2.0f, lastY = SCR_HEIGHT/2.0f;
 // 声明一个变量，用来解决第一次进入窗口，偏移量计算过大问题
 bool firstMouse = true;
+
+// 定义灯的位置
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 int main() {
 
@@ -188,6 +191,7 @@ int main() {
 	stbi_image_free(data2);
 
 	Shader shader("vertex.glsl", "fragment.glsl");
+	Shader lightShader("lightVertex.glsl", "lightFragment.glsl");
 
 	unsigned int VBO, VAO, EBO;
 	// 生成VAO对象
@@ -217,8 +221,20 @@ int main() {
 	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	//glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(2);
+
+	//	创建灯光VAO
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+
+	// 只需要绑定VBO不用再次设置VBO的数据，因为箱子的VBO数据中已经包含了正确的立方体顶点数据
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	
+	// 设置灯立方体的顶点属性
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
 
 	// 技术测试
 	TechnologyTest technologyTest;
@@ -244,9 +260,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// 渲染
-		// 使用着色器
-		shader.Use();
-
 		// 创建观察矩阵(摄像机)
 		glm::mat4 view = camera.getViewMatrix();
 
@@ -254,29 +267,39 @@ int main() {
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-		// 将矩阵传入顶点着色器，计算顶点坐标
-		
-		shader.setMatrix4("view", glm::value_ptr(view));
-		shader.setMatrix4("projection", glm::value_ptr(projection));
+		// 处理灯的位置
+		glm::mat4 model;
+		model = glm::mat4();
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+
+		// 使用灯着色器
+		lightShader.Use();
+		lightShader.setMatrix4("view", glm::value_ptr(view));
+		lightShader.setMatrix4("projection", glm::value_ptr(projection));
+		lightShader.setMatrix4("model", glm::value_ptr(model));
+
+		// 绘制灯
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// 使用着色器
+		shader.Use();
+		shader.setFloat("objectColor", 1.0f, 0.5f, 0.31f);
+		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
 		// 绑定纹理并绘制
 		shader.setInt("ourTexture1", 0);
 		shader.setInt("ourTexture2", 1);
 
+		// 将矩阵传入顶点着色器，计算顶点坐标
+		shader.setMatrix4("view", glm::value_ptr(view));
+		shader.setMatrix4("projection", glm::value_ptr(projection));
+		model = glm::mat4();
+		shader.setMatrix4("model", glm::value_ptr(model));
+
 		// 绑定顶点数组
 		glBindVertexArray(VAO);
-		// 绘制三角形
-		// （OpenGL图元， 顶点数组的起始索引，绘制顶点个数）
-		for (unsigned int i = 0; i < 10; i++) {
-			//创建模型矩阵
-			glm::mat4 model;
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			// 将模型以x轴旋转-55度
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
-			shader.setMatrix4("model", glm::value_ptr(model));
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);

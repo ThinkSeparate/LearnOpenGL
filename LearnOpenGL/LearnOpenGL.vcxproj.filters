@@ -47,6 +47,12 @@
     <None Include="fragment.glsl">
       <Filter>shader</Filter>
     </None>
+    <None Include="lightVertex.glsl">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="lightFragment.glsl">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
