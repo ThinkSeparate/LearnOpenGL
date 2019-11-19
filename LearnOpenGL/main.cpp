@@ -21,6 +21,14 @@ const unsigned int SCR_HEIGHT = 600;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
+//----定义全局变量
+// 设置摄像机位置
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+// 设置摄像机方向
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+// 设置摄像机上轴
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 int main() {
 
 	// 初始化GLFW
@@ -229,26 +237,10 @@ int main() {
 		// 使用着色器
 		shader.use();
 
-		// 设置摄像机位置
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-		// 设置摄像机方向
-		glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-		// 设置摄像机右轴：使用叉乘
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-		// 设置摄像机上轴
-		glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
 		// 创建观察矩阵(摄像机)
 		glm::mat4 view;
 		// 使用（摄像机位置，摄像机观察方向，摄像机的向上向量）
-		float radius = 10.0f;
-		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
-		view = glm::lookAt(glm::vec3(camX, 0.0, camZ),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f));
+		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		// 创建投影矩阵
 		glm::mat4 projection;
@@ -292,6 +284,24 @@ int main() {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	// 定义摄像机移动
+	float cameraSpeed = 0.05f;
+	// w键，向前移动
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cameraPos += cameraSpeed * cameraFront;
+	}
+	// s键，向后移动
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		cameraPos -= cameraSpeed * cameraFront;
+	}
+	// a键，向左移动
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	// d键，向右移动
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
