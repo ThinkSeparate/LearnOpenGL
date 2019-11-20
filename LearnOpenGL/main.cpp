@@ -290,8 +290,17 @@ int main() {
 		shader.setFloat("lightPos", lightPos);
 		shader.setFloat("viewPos", camera.getPosition());
 
-		shader.setFloat("light.ambient", 0.2f, 0.2f, 0.2f);
-		shader.setFloat("light.diffuse", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
+		// 设置变化的光源
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime() * 2.0f);
+		lightColor.y = sin(glfwGetTime() * 0.7f);
+		lightColor.z = sin(glfwGetTime() * 1.3f);
+
+		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // 降低影响
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
+
+		shader.setFloat("light.ambient", ambientColor);
+		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
 		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
 
 		shader.setFloat("material.ambient", 1.0f, 0.5f, 0.31f);
