@@ -9,36 +9,40 @@ uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
+struct Material {
+	vec3 ambient;	// 环境光
+	vec3 diffuse;	// 漫反射
+	vec3 specular;	// 镜面反射
+	float shininess;	// 反光度
+};
+
+uniform Material material;
+
 in vec3 FragPos;
 in vec3 Normal;
 
 void main()
 {
-	// 标准化法向量
-	vec3 norm = normalize(Normal);
-
-	// 计算光照方向
-	vec3 lightDir = normalize(lightPos - FragPos);
+	// 计算环境光
+	vec3 ambient = lightColor * material.ambient;
 
 	// 计算漫反射
+	vec3 norm = normalize(Normal);
+	vec3 lightDir = normalize(lightPos - FragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * lightColor;
+	vec3 diffuse = lightColor * (diff * material.diffuse);
 
-	// 加入环境光照因子
-	float ambientStrength = 0.1f;
-	vec3 ambient = ambientStrength * lightColor;
-
-	// 加入高光
+	// 计算镜面光
 	float specularStrength = 0.5f;
 	vec3 viewDir = normalize(viewPos - FragPos);
 	// reflect函数（从光源指向片段的向量，法向量）
 	vec3 reflectDir = reflect(-lightDir, norm);
 	// 计算镜面分量
 	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
-	vec3 specular = specularStrength * spec * lightColor;
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
+	vec3 specular = lightColor * (spec * material.specular);
 
-	vec3 result = (ambient + diffuse + specular) * objectColor;
+	vec3 result = ambient + diffuse + specular;
 
 	FragColor = vec4(result, 1.0f);
 };

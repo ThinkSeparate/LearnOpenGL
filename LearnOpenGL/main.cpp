@@ -289,6 +289,10 @@ int main() {
 		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
 		shader.setFloat("lightPos", lightPos);
 		shader.setFloat("viewPos", camera.getPosition());
+		shader.setFloat("material.ambient", 1.0f, 0.5f, 0.31f);
+		shader.setFloat("material.diffuse", 1.0f, 0.5f, 0.31f);
+		shader.setFloat("material.specular", 0.5f, 0.5f, 0.5f);
+		shader.setFloat("material.shininess", 32.0f);
 		// 绑定纹理并绘制
 		shader.setInt("ourTexture1", 0);
 		shader.setInt("ourTexture2", 1);
