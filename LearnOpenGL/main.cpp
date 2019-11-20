@@ -289,6 +289,11 @@ int main() {
 		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
 		shader.setFloat("lightPos", lightPos);
 		shader.setFloat("viewPos", camera.getPosition());
+
+		shader.setFloat("light.ambient", 0.2f, 0.2f, 0.2f);
+		shader.setFloat("light.diffuse", 0.5f, 0.5f, 0.5f); // 将光照调暗了一些以搭配场景
+		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
+
 		shader.setFloat("material.ambient", 1.0f, 0.5f, 0.31f);
 		shader.setFloat("material.diffuse", 1.0f, 0.5f, 0.31f);
 		shader.setFloat("material.specular", 0.5f, 0.5f, 0.5f);
