@@ -20,8 +20,7 @@ struct Light {
 uniform Light light;
 
 struct Material {
-	vec3 ambient;	// 环境光
-	vec3 diffuse;	// 漫反射
+	sampler2D diffuse;	// 漫反射贴图
 	vec3 specular;	// 镜面反射
 	float shininess;	// 反光度
 };
@@ -30,17 +29,18 @@ uniform Material material;
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoords;
 
 void main()
 {
-	// 计算环境光
-	vec3 ambient = light.ambient * material.ambient;
-
 	// 计算漫反射
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * (diff * material.diffuse);
+	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, TexCoords)));
+
+	// 计算环境光
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 
 	// 计算镜面光
 	float specularStrength = 0.5f;
