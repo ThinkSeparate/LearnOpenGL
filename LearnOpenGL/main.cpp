@@ -130,13 +130,8 @@ int main() {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
-	// 加载墙的图片
-	int width, height, nrChannels;
-	//stbi_set_flip_vertically_on_load(true);
-	unsigned char* data1 = stbi_load("container2.png", &width, &height, &nrChannels, 0);
-
 	// 生成纹理对象
-	unsigned int diffuseMap;
+	unsigned int diffuseMap, specularMap;
 	glGenTextures(1, &diffuseMap);
 	// 绑定纹理
 	glActiveTexture(GL_TEXTURE0);
@@ -147,6 +142,11 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// 加载墙的图片
+	int width, height, nrChannels;
+	//stbi_set_flip_vertically_on_load(true);
+	unsigned char* data1 = stbi_load("container2.png", &width, &height, &nrChannels, 0);
 
 	if (data1) {
 		// 生成纹理
@@ -160,8 +160,37 @@ int main() {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 
+	// 生成纹理对象
+	glGenTextures(1, &specularMap);
+	// 绑定纹理
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, specularMap);
+
+	// 为当前绑定的纹理对象设置环绕、过滤方式
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	// 加载镜面反射的图片
+	//stbi_set_flip_vertically_on_load(true);
+	unsigned char* data2 = stbi_load("container2_specular.png", &width, &height, &nrChannels, 0);
+
+	if (data2) {
+		// 生成纹理
+		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		// 生成多级渐变纹理
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
 	// 释放图像内存
 	stbi_image_free(data1);
+	stbi_image_free(data2);
 
 	Shader shader("vertex.glsl", "fragment.glsl");
 	Shader lightShader("lightVertex.glsl", "lightFragment.glsl");
@@ -280,7 +309,9 @@ int main() {
 		shader.setFloat("material.diffuse", 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		shader.setFloat("material.specular", 0.5f, 0.5f, 0.5f);
+		shader.setFloat("material.specular", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
 		shader.setFloat("material.shininess", 32.0f);
 		// 绑定纹理并绘制
 		shader.setInt("ourTexture1", 0);

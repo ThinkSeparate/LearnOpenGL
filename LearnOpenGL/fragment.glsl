@@ -21,7 +21,7 @@ uniform Light light;
 
 struct Material {
 	sampler2D diffuse;	// 漫反射贴图
-	vec3 specular;	// 镜面反射
+	sampler2D specular;	// 镜面反射贴图
 	float shininess;	// 反光度
 };
 
@@ -50,7 +50,7 @@ void main()
 	// 计算镜面分量
 	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-	vec3 specular = light.specular * (spec * material.specular);
+	vec3 specular = light.specular * (spec * vec3(texture(material.specular, TexCoords)));
 
 	vec3 result = ambient + diffuse + specular;
 

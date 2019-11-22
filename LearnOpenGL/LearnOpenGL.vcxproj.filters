@@ -75,5 +75,8 @@
     <Image Include="container2.png">
       <Filter>texture</Filter>
     </Image>
+    <Image Include="container2_specular.png">
+      <Filter>texture</Filter>
+    </Image>
   </ItemGroup>
 </Project>
