@@ -301,6 +301,7 @@ int main() {
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // 降低影响
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
 
+		shader.setFloat("light.direction", -0.2f, -1.0f, -0.3f);
 		shader.setFloat("light.ambient", ambientColor);
 		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
 		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
@@ -320,12 +321,18 @@ int main() {
 		// 将矩阵传入顶点着色器，计算顶点坐标
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
-		model = glm::mat4(1.0f);
-		shader.setMatrix4("model", glm::value_ptr(model));
 
-		// 绑定顶点数组
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			shader.setMatrix4("model", glm::value_ptr(model));
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 	
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
