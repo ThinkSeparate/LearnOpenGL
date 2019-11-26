@@ -249,7 +249,8 @@ int main() {
 
 		shader.setFloat("light.position", camera.getPosition());
 		shader.setFloat("light.direction", camera.getFront());
-		shader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("light.innerCutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 		shader.setFloat("light.ambient", ambientColor);
 		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
 		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);

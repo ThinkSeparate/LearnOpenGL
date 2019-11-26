@@ -7,9 +7,10 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 
 struct Light {
-	vec3 position;	// 这三个变量用于处理灯的物理信息
+	vec3 position;	// 这四个变量用于处理灯的物理信息
 	vec3 direction;
-	float cutOff;
+	float innerCutOff;	// 内外圆锥实现光圈的边缘平滑
+	float outerCutOff;
 
     vec3 ambient;	// 这三个变量用于处理灯的照射属性
     vec3 diffuse;
@@ -39,10 +40,15 @@ out vec4 FragColor;
 
 void main()
 {
+	// 计算theta，即片段和光圈的夹角
 	vec3 lightDir = normalize(light.position - FragPos);
-	float theta = dot(lightDir, normalize(-light.direction)); 
-	if (theta > light.cutOff) {
-		// 计算漫反射
+	float theta = dot(lightDir, normalize(-light.direction));
+
+	// 计算系数
+	float epsilon   = light.innerCutOff - light.outerCutOff;
+	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);    
+	 
+	// 计算漫反射
 		vec3 norm = normalize(Normal);
 		float diff = max(dot(norm, lightDir), 0.0);
 		vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, TexCoords)));
@@ -63,11 +69,8 @@ void main()
 		float distance = length(light.position - FragPos);
 		float attennation = 1.0f / (light.constant + light.linear * distance + 
 				light.quadratic * (distance * distance));
-		vec3 result = attennation * (ambient + diffuse + specular);
+		vec3 result = attennation * (ambient + diffuse * intensity + specular * intensity);
 
 		FragColor = vec4(result, 1.0f);
-	}else{
-		FragColor = vec4(light.ambient * texture(material.diffuse, TexCoords).rgb, 1.0);
-	}
 	
 };
