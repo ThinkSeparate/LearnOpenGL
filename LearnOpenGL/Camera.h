@@ -28,6 +28,7 @@ public:
 	// 可以获得观察矩阵
 	float getZoom();
 	glm::vec3 getPosition();
+	glm::vec3 getFront();
 	// 可以获得观察矩阵
 	glm::mat4 getViewMatrix();
 	// 键盘控制

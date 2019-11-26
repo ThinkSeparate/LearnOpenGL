@@ -41,16 +41,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vertex.glsl">
+    <None Include="light.vert">
       <Filter>shader</Filter>
     </None>
-    <None Include="fragment.glsl">
+    <None Include="light.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="lightVertex.glsl">
+    <None Include="model.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="lightFragment.glsl">
+    <None Include="model.vert">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

@@ -24,6 +24,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+unsigned int loadTexture(const char *path);
 
 //----定义全局变量
 // 摄像机
@@ -134,69 +135,12 @@ int main() {
 	};
 
 	// 生成纹理对象
-	unsigned int diffuseMap, specularMap;
-	glGenTextures(1, &diffuseMap);
-	// 绑定纹理
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, diffuseMap);
+	unsigned int diffuseMap = loadTexture("container2.png");
+	unsigned int specularMap = loadTexture("container2_specular.png");
 
-	// 为当前绑定的纹理对象设置环绕、过滤方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	// 加载墙的图片
-	int width, height, nrChannels;
-	//stbi_set_flip_vertically_on_load(true);
-	unsigned char* data1 = stbi_load("container2.png", &width, &height, &nrChannels, 0);
-
-	if (data1) {
-		// 生成纹理
-		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data1);
-		// 生成多级渐变纹理
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-
-	// 生成纹理对象
-	glGenTextures(1, &specularMap);
-	// 绑定纹理
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, specularMap);
-
-	// 为当前绑定的纹理对象设置环绕、过滤方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	// 加载镜面反射的图片
-	//stbi_set_flip_vertically_on_load(true);
-	unsigned char* data2 = stbi_load("container2_specular.png", &width, &height, &nrChannels, 0);
-
-	if (data2) {
-		// 生成纹理
-		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
-		// 生成多级渐变纹理
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-
-	// 释放图像内存
-	stbi_image_free(data1);
-	stbi_image_free(data2);
-
-	Shader shader("vertex.glsl", "fragment.glsl");
-	Shader lightShader("lightVertex.glsl", "lightFragment.glsl");
+	// 生成shader对象
+	Shader shader("model.vert", "model.frag");
+	Shader lightShader("light.vert", "light.frag");
 
 	unsigned int VBO, VAO, EBO;
 	// 生成VAO对象
@@ -292,7 +236,6 @@ int main() {
 		shader.Use();
 		shader.setFloat("objectColor", 1.0f, 0.5f, 0.31f);
 		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
-		shader.setFloat("lightPos", lightPos);
 		shader.setFloat("viewPos", camera.getPosition());
 
 		// 设置变化的光源
@@ -304,7 +247,9 @@ int main() {
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // 降低影响
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
 
-		shader.setFloat("light.direction", -0.2f, -1.0f, -0.3f);
+		shader.setFloat("light.position", camera.getPosition());
+		shader.setFloat("light.direction", camera.getFront());
+		shader.setFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
 		shader.setFloat("light.ambient", ambientColor);
 		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
 		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
@@ -410,4 +355,50 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+unsigned int loadTexture(const char* path)
+{
+	// 生成纹理对象
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	// 加载图片
+	int width, height, nrChannels;
+	//stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+
+	if (data) {
+		GLenum format;
+		if (nrChannels == 1)
+			format = GL_RED;
+		else if (nrChannels == 3)
+			format = GL_RGB;
+		else if (nrChannels == 4)
+			format = GL_RGBA;
+
+		// 绑定纹理
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		// 生成纹理
+		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		// 生成多级渐变纹理
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// 为当前绑定的纹理对象设置环绕、过滤方式
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
+	// 释放图像内存
+	stbi_image_free(data);
+
+	return textureID;
 }

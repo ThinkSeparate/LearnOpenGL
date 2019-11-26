@@ -135,10 +135,10 @@
     <ClCompile Include="TechnologyTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.glsl" />
-    <None Include="lightFragment.glsl" />
-    <None Include="lightVertex.glsl" />
-    <None Include="vertex.glsl" />
+    <None Include="model.frag" />
+    <None Include="light.frag" />
+    <None Include="light.vert" />
+    <None Include="model.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
