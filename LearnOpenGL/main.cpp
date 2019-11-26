@@ -2,6 +2,7 @@
 #include <glad/glad.h>	// 用来管理OpenGL函数指针
 #include <GLFW/glfw3.h>	// glfw3，包含了OpenGL的库使用
 #include <stb-master\stb_image.h> // 图片加载库
+
 #include <glm/glm.hpp>	// 引用OpenGL变换相关的库文件，glm是OpenGL Mathematics的缩写
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
@@ -25,14 +26,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //----定义全局变量
+// 摄像机
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-// 这两个变量用来解决每帧时间问题
-float deltaTime = 0.0f; // 当前帧与上一帧的时间差
-float lastFrame = 0.0f; // 上一帧的时间
 // 用来计算鼠标的偏移量，初始值设置为屏幕中心
 float lastX = SCR_WIDTH/2.0f, lastY = SCR_HEIGHT/2.0f;
 // 声明一个变量，用来解决第一次进入窗口，偏移量计算过大问题
 bool firstMouse = true;
+
+// 这两个变量用来解决每帧时间问题
+float deltaTime = 0.0f; // 当前帧与上一帧的时间差
+float lastFrame = 0.0f; // 上一帧的时间
 
 // 定义灯的位置
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
@@ -48,7 +51,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// 创建一个800x600的窗口，窗口标题为LearnOpenGL
-	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -305,6 +308,10 @@ int main() {
 		shader.setFloat("light.ambient", ambientColor);
 		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
 		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
+
+		shader.setFloat("light.constant", 1.0f);
+		shader.setFloat("light.linear", 0.09f);
+		shader.setFloat("light.quadratic", 0.032f);
 
 		shader.setFloat("material.ambient", 1.0f, 0.5f, 0.31f);
 		shader.setFloat("material.diffuse", 0);
