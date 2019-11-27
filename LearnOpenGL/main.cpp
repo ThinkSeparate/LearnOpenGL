@@ -9,6 +9,7 @@
 
 //----包含系统库文件
 #include <iostream>
+#include <string>
 
 //----包含自定义类
 #include "Camera.h"	// 引用摄像机类
@@ -134,6 +135,13 @@ int main() {
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
 
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
+
 	// 生成纹理对象
 	unsigned int diffuseMap = loadTexture("container2.png");
 	unsigned int specularMap = loadTexture("container2_specular.png");
@@ -216,27 +224,83 @@ int main() {
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-		// 处理灯的位置
+		// 创建模型矩阵
 		glm::mat4 model;
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f));
 
 		// 使用灯着色器
 		lightShader.Use();
 		lightShader.setMatrix4("view", glm::value_ptr(view));
 		lightShader.setMatrix4("projection", glm::value_ptr(projection));
-		lightShader.setMatrix4("model", glm::value_ptr(model));
 
 		// 绘制灯
 		glBindVertexArray(lightVAO);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+		lightShader.setMatrix4("model", glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.2f));
+			lightShader.setMatrix4("model", glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		// 使用着色器
 		shader.Use();
-		shader.setFloat("objectColor", 1.0f, 0.5f, 0.31f);
-		shader.setFloat("lightColor", 1.0f, 1.0f, 1.0f);
 		shader.setFloat("viewPos", camera.getPosition());
+
+		// 设置模型材质
+		shader.setFloat("material.diffuse", 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		shader.setFloat("material.specular", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		shader.setFloat("material.shininess", 32.0f);
+		shader.setInt("ourTexture1", 0);
+		shader.setInt("ourTexture2", 1);
+
+		// 设置平行光
+		shader.setFloat("dirLight.direction", -0.2f, -1.0f, -0.3f);
+
+		shader.setFloat("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+		shader.setFloat("dirLight.diffuse", 0.4f, 0.4f, 0.4f); // 将光照调暗了一些以搭配场景
+		shader.setFloat("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+
+		// 设置点光源
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].position", pointLightPositions[i]);
+
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].ambient", 0.05f, 0.05f, 0.05f);
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].diffuse", 0.8f, 0.8f, 0.8f); // 将光照调暗了一些以搭配场景
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].specular", 1.0f, 1.0f, 1.0f);
+
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].constant", 1.0f);
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].linear", 0.09); // 将光照调暗了一些以搭配场景
+			shader.setFloat(std::string("pointLights[") + std::to_string(i) + "].quadratic", 0.032);
+		}
+
+		// 设置聚光
+		shader.setFloat("spotLight.position", camera.getPosition());
+		shader.setFloat("spotLight.direction", camera.getFront());
+
+		shader.setFloat("spotLight.innerCutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+
+		shader.setFloat("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+		shader.setFloat("spotLight.diffuse", 1.0f, 1.0f, 1.0f); // 将光照调暗了一些以搭配场景
+		shader.setFloat("spotLight.specular", 1.0f, 1.0f, 1.0f);
+
+		shader.setFloat("spotLight.constant", 1.0f);
+		shader.setFloat("spotLight.linear", 0.09f);
+		shader.setFloat("spotLight.quadratic", 0.032f);
 
 		// 设置变化的光源
 		glm::vec3 lightColor;
@@ -246,30 +310,6 @@ int main() {
 
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // 降低影响
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
-
-		shader.setFloat("light.position", camera.getPosition());
-		shader.setFloat("light.direction", camera.getFront());
-		shader.setFloat("light.innerCutOff", glm::cos(glm::radians(12.5f)));
-		shader.setFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
-		shader.setFloat("light.ambient", ambientColor);
-		shader.setFloat("light.diffuse", diffuseColor); // 将光照调暗了一些以搭配场景
-		shader.setFloat("light.specular", 1.0f, 1.0f, 1.0f);
-
-		shader.setFloat("light.constant", 1.0f);
-		shader.setFloat("light.linear", 0.09f);
-		shader.setFloat("light.quadratic", 0.032f);
-
-		shader.setFloat("material.ambient", 1.0f, 0.5f, 0.31f);
-		shader.setFloat("material.diffuse", 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		shader.setFloat("material.specular", 1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		shader.setFloat("material.shininess", 32.0f);
-		// 绑定纹理并绘制
-		shader.setInt("ourTexture1", 0);
-		shader.setInt("ourTexture2", 1);
 
 		// 将矩阵传入顶点着色器，计算顶点坐标
 		shader.setMatrix4("view", glm::value_ptr(view));
