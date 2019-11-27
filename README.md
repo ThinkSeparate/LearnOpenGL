@@ -3,9 +3,10 @@ OpenGL学习项目
 1. 库依赖：项目需要的外部库，存放于/Libraries目录下；
   其中/include为项目所需的头文件，通过 项目-属性-VC++目录-包含目录添加
   /libs为项目所需的库文件，通过 项目-属性-VC++目录-库目录添加；其他VS版本需要的库也在该目录下
-  此外，需要添加附加依赖项，第一次项目，只需要包含opengl32.lib和glfw3.lib即可
+  此外，需要添加附加依赖项 项目-属性-连接器-输入-附加依赖项，第一次项目，只需要包含opengl32.lib和glfw3.lib即可
   1.1 图片加载使用了名为stb_image的库，include里面包含的内容很多，实际用到的只有stb_iamge.h 
   1.2 矩阵变换使用了glm库
+  1.3 模型加载使用了一个assimp库，这个库只有源码，需要自己根据VS版本进行Cmake；所以在项目目录下上传了assimp-4.1.0.zip和cmake-3.16.0-rc1-win64-x64.rar；具体编译方式参考https://learnopengl-cn.github.io/03%20Model%20Loading/01%20Assimp/ 和https://learnopengl-cn.github.io/01%20Getting%20started/02%20Creating%20a%20window/ ； 编译版本选择win32，如果之前一直是win32项目的话；编译结束后，仍然copy /include的内容以及/libs内容到指定目录，参考本条开始内容。同时在添加依赖，名称类似于assimp-vc140-mt.lib；
 2. 依赖资源文件，均放在项目目录下
 3. 初次使用项目需要将glad.c文件加入到源文件中，glad.c放在项目目录下了
 4. 兼容性解决。直接clone此项目可能会出现“模块计算机类型“x64”与目标计算机类型“x86”冲突”警告及一堆报错。报错主要是由此警告造成的，原因是项目未64位项目，而使用的库/源文件为32位的。解决方案：
