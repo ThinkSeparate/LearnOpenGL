@@ -3,8 +3,8 @@
 uniform vec3 viewPos;
 
 struct Material {
-	sampler2D diffuse;	// 漫反射贴图
-	sampler2D specular;	// 镜面反射贴图
+	sampler2D texture_diffuse;	// 漫反射贴图
+	sampler2D texture_specular;	// 镜面反射贴图
 	float shininess;	// 反光度
 };
 
@@ -104,7 +104,7 @@ void main()
 	output += CalcDirLight(dirLight, norm, viewDir);
 
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		output += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+		//output += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
 	}
 
 	// 加入聚光
@@ -118,10 +118,10 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
 	// 计算漫反射
 	vec3 lightDir = normalize(-light.direction);
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, TexCoords)));
+	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.texture_diffuse, TexCoords)));
 
 	// 计算环境光
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse, TexCoords));
 
 	// 计算镜面光
 	float specularStrength = 0.5f;
@@ -130,7 +130,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
 	// 计算镜面分量
 	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-	vec3 specular = light.specular * (spec * vec3(texture(material.specular, TexCoords)));
+	vec3 specular = light.specular * (spec * vec3(texture(material.texture_specular, TexCoords)));
 
 	return ambient + diffuse + specular;
 }
@@ -141,10 +141,10 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 	 
 	// 计算漫反射
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, TexCoords)));
+	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.texture_diffuse, TexCoords)));
 
 	// 计算环境光
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse, TexCoords));
 
 	// 计算镜面光
 	float specularStrength = 0.5f;
@@ -153,7 +153,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 	// 计算镜面分量
 	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-	vec3 specular = light.specular * (spec * vec3(texture(material.specular, TexCoords)));
+	vec3 specular = light.specular * (spec * vec3(texture(material.texture_specular, TexCoords)));
 
 	float distance = length(light.position - FragPos);
 	float attennation = 1.0f / (light.constant + light.linear * distance + 
@@ -173,10 +173,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 	 
 	// 计算漫反射
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.diffuse, TexCoords)));
+	vec3 diffuse = light.diffuse * (diff * vec3(texture(material.texture_diffuse, TexCoords)));
 
 	// 计算环境光
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = light.ambient * vec3(texture(material.texture_diffuse, TexCoords));
 
 	// 计算镜面光
 	float specularStrength = 0.5f;

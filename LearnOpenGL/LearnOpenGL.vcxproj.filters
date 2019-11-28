@@ -19,6 +19,9 @@
     <Filter Include="texture">
       <UniqueIdentifier>{26acb905-4adf-4847-b47e-257ad708cae7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{a93218bf-7183-461e-859d-6c2981dc41ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

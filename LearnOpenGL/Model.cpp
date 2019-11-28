@@ -1,6 +1,6 @@
 #include "Model.h"
 
-Model::Model(char* path)
+Model::Model(string path)
 {
 	loadModel(path);
 }
@@ -77,8 +77,8 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		// assimp允许一个模型顶点上存在8个纹理坐标，我们只用第一个
 		if (mesh->mTextureCoords[0]) {
 			glm::vec2 vec;
-			vec.x = mesh[i].mTextureCoords[0][i].x;
-			vec.y = mesh[i].mTextureCoords[0][i].y;
+			vec.x = mesh->mTextureCoords[0][i].x;
+			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.texCoords = vec;
 		}
 		else
@@ -92,7 +92,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	// 处理索引: 一个网格包含多个面，每个面包含多个索引
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
-		for (unsigned int j = 0; j < face.mNumIndices; i++) {
+		for (unsigned int j = 0; j < face.mNumIndices; j++) {
 			indices.push_back(face.mIndices[j]);
 		}
 	}

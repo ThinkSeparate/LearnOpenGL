@@ -14,6 +14,7 @@
 //----包含自定义类
 #include "Camera.h"	// 引用摄像机类
 #include "Shader.h"	// 引用shader类
+#include "Model.h"
 #include "TechnologyTest.h"	// 自定义的技术测试类：学习中需要使用很多新技术，测试性代码放在这个类里实现
 
 //----声明常量
@@ -25,7 +26,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-unsigned int loadTexture(const char *path);
 
 //----定义全局变量
 // 摄像机
@@ -142,52 +142,26 @@ int main() {
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
 
-	// 生成纹理对象
-	unsigned int diffuseMap = loadTexture("container2.png");
-	unsigned int specularMap = loadTexture("container2_specular.png");
-
+	
 	// 生成shader对象
 	Shader shader("model.vert", "model.frag");
 	Shader lightShader("light.vert", "light.frag");
 
-	unsigned int VBO, VAO, EBO;
-	// 生成VAO对象
-	glGenVertexArrays(1, &VAO);
-	// 生成VBO对象
-	glGenBuffers(1, &VBO);
-	// 生成VEO对象
-	glGenBuffers(1, &EBO);
-
-	// 绑定VAO
-	glBindVertexArray(VAO);
-
-	// 绑定VBO，并把数据复制到缓冲
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// 绑定VEO，并把数据复制到缓冲
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// 链接顶点属性
-	// （要配置的顶点属性layout(location = 0)， 顶点属性的大小， 顶点属性的类型，步长（一个顶点属性的长度），偏移量（该属性在一个顶点数据中的起始位置））
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	// 以顶点属性位置为参数启用顶点属性(location = 0)；顶点属性默认禁用
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	// 生成模型对象
+	Model outModel("model/nanosuit/nanosuit.obj");
 
 	//	创建灯光VAO
-	unsigned int lightVAO;
+	unsigned int lightVAO, VBO;
 	glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);
 
+	// 生成VBO对象
+	glGenBuffers(1, &VBO);
+
 	// 只需要绑定VBO不用再次设置VBO的数据，因为箱子的VBO数据中已经包含了正确的立方体顶点数据
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// 绑定VBO，并把数据复制到缓冲
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	
 	// 设置灯立方体的顶点属性
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
@@ -254,17 +228,6 @@ int main() {
 		shader.Use();
 		shader.setFloat("viewPos", camera.getPosition());
 
-		// 设置模型材质
-		shader.setFloat("material.diffuse", 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		shader.setFloat("material.specular", 1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		shader.setFloat("material.shininess", 32.0f);
-		shader.setInt("ourTexture1", 0);
-		shader.setInt("ourTexture2", 1);
-
 		// 设置平行光
 		shader.setFloat("dirLight.direction", -0.2f, -1.0f, -0.3f);
 
@@ -315,17 +278,11 @@ int main() {
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
 
-		glBindVertexArray(VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-			shader.setMatrix4("model", glm::value_ptr(model));
-
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.setMatrix4("model", glm::value_ptr(model));
+		outModel.Draw(shader);
 	
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
@@ -396,50 +353,4 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-unsigned int loadTexture(const char* path)
-{
-	// 生成纹理对象
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	// 加载图片
-	int width, height, nrChannels;
-	//stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-
-	if (data) {
-		GLenum format;
-		if (nrChannels == 1)
-			format = GL_RED;
-		else if (nrChannels == 3)
-			format = GL_RGB;
-		else if (nrChannels == 4)
-			format = GL_RGBA;
-
-		// 绑定纹理
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		// 生成纹理
-		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		// 生成多级渐变纹理
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		// 为当前绑定的纹理对象设置环绕、过滤方式
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-
-	// 释放图像内存
-	stbi_image_free(data);
-
-	return textureID;
 }

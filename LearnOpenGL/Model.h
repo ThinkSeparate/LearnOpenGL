@@ -17,7 +17,7 @@ unsigned int TextureFromFile(const char* path, const string& directory, bool gam
 class Model
 {
 public:
-	Model(char* path);
+	Model(string path);
 	void Draw(Shader shader);
 private:
 	/*	模型数据	*/
