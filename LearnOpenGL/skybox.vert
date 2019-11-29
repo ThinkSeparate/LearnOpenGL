@@ -11,7 +11,8 @@ out vec3 TexCoords;
 void main()
 {
 	// 计算顶点position
-	gl_Position = projection * view * vec4(aPos, 1.0);
+	vec4 pos = projection * view * vec4(aPos, 1.0);;
+	gl_Position = pos.xyww;
 	// 输出UV坐标
 	TexCoords = aPos;
 };

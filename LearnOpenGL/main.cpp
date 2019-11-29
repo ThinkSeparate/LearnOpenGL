@@ -321,17 +321,6 @@ int main() {
 		// 创建投影矩阵
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-		// 绘制背景（天空盒）
-		glDepthMask(GL_FALSE);
-		skyShader.Use();
-		glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
-		skyShader.setMatrix4("view", glm::value_ptr(skeyView));
-		skyShader.setMatrix4("projection", glm::value_ptr(projection));
-		glBindVertexArray(skyVAO);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glDepthMask(GL_TRUE);
 		
 		// 使用着色器
 		shader.Use();
@@ -369,6 +358,18 @@ int main() {
 			shader.setMatrix4("model", glm::value_ptr(model));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
+
+		// 绘制背景（天空盒），最后绘制是因为我们修改了shader的深度
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_LEQUAL);
+		skyShader.Use();
+		glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
+		skyShader.setMatrix4("view", glm::value_ptr(skeyView));
+		skyShader.setMatrix4("projection", glm::value_ptr(projection));
+		glBindVertexArray(skyVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDepthMask(GL_TRUE);
 
 		frameBuff.Unbind();
 
