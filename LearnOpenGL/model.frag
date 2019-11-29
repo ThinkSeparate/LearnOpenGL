@@ -184,7 +184,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 	// 计算镜面分量
 	// pow函数，计算反光度，反光度越高，反光能力越强，散射越少，高光点就越小
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
-	vec3 specular = light.specular * (spec * vec3(texture(material.specular, TexCoords)));
+	vec3 specular = light.specular * (spec * vec3(texture(material.texture_specular, TexCoords)));
 
 	float distance = length(light.position - fragPos);
 	float attennation = 1.0f / (light.constant + light.linear * distance + 

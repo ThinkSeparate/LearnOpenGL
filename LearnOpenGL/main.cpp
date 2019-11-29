@@ -141,7 +141,6 @@ int main() {
 		glm::vec3(-4.0f,  2.0f, -12.0f),
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
-
 	
 	// 生成shader对象
 	Shader shader("model.vert", "model.frag");
@@ -206,15 +205,17 @@ int main() {
 		lightShader.setMatrix4("view", glm::value_ptr(view));
 		lightShader.setMatrix4("projection", glm::value_ptr(projection));
 
-		// 绘制灯
+		// 绑定灯顶点数组
 		glBindVertexArray(lightVAO);
 
+		// 绘制定向光的灯模型
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f));
 		lightShader.setMatrix4("model", glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		// 绘制点光源的灯模型x4
 		for (unsigned int i = 0; i < 4; i++)
 		{
 			model = glm::mat4(1.0f);
@@ -264,15 +265,6 @@ int main() {
 		shader.setFloat("spotLight.constant", 1.0f);
 		shader.setFloat("spotLight.linear", 0.09f);
 		shader.setFloat("spotLight.quadratic", 0.032f);
-
-		// 设置变化的光源
-		glm::vec3 lightColor;
-		lightColor.x = sin(glfwGetTime() * 2.0f);
-		lightColor.y = sin(glfwGetTime() * 0.7f);
-		lightColor.z = sin(glfwGetTime() * 1.3f);
-
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // 降低影响
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
 
 		// 将矩阵传入顶点着色器，计算顶点坐标
 		shader.setMatrix4("view", glm::value_ptr(view));
