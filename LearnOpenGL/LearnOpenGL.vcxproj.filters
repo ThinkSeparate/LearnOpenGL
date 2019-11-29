@@ -48,6 +48,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.vert">
@@ -68,6 +71,12 @@
     <None Include="outline.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="screen.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="screen.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -83,6 +92,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

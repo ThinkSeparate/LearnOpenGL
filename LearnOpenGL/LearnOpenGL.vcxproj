@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Desktop\OpenGL\glad\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -143,9 +144,12 @@
     <None Include="model.vert" />
     <None Include="outline.frag" />
     <None Include="outline.vert" />
+    <None Include="screen.frag" />
+    <None Include="screen.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />

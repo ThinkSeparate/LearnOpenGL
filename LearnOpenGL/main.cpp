@@ -12,6 +12,7 @@
 #include <string>
 
 //----包含自定义类
+#include "FrameBuffer.h"
 #include "Camera.h"	// 引用摄像机类
 #include "Shader.h"	// 引用shader类
 #include "Model.h"
@@ -126,6 +127,17 @@ int main() {
 		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 	};
 
+	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	 // positions   // texCoords
+		 -1.0f,  1.0f,  0.0f, 1.0f,
+		 -1.0f, -1.0f,  0.0f, 0.0f,
+		  1.0f, -1.0f,  1.0f, 0.0f,
+
+		 -1.0f,  1.0f,  0.0f, 1.0f,
+		  1.0f, -1.0f,  1.0f, 0.0f,
+		  1.0f,  1.0f,  1.0f, 1.0f
+	};
+
 	vector<glm::vec3> vegetation;
 	vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
 	vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
@@ -137,6 +149,8 @@ int main() {
 	Shader shader("model.vert", "model.frag");
 	// 创建轮廓shader
 	Shader outlineShader("outline.vert", "outline.frag");
+	// 创建场景shader
+	Shader screenShader("screen.vert", "screen.frag");
 
 	// 箱子VAO
 	unsigned int cubeVAO, cubeVBO;
@@ -171,10 +185,26 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	// 场景VAO
+	unsigned int screenVAO, screenVBO;
+	glGenVertexArrays(1, &screenVAO);
+	glGenBuffers(1, &screenVBO);
+	glBindVertexArray(screenVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
 	// 加载贴图
 	unsigned int cubeTexture = loadTexture("texture/container2.png");
 	unsigned int planeTexture = loadTexture("texture/wall.jpg");
 	unsigned int grassTexture = loadTexture("texture/grass.png");
+
+	// 创建帧缓冲
+	FrameBuffer frameBuff(READ_ADN_DRAW, SCR_WIDTH, SCR_HEIGHT, true, true, true);
+	frameBuff.Bind();
 
 	shader.Use();
 	shader.setInt("texture1", 0);
@@ -194,6 +224,8 @@ int main() {
 		// 输入
 		processInput(window);
 
+		frameBuff.Bind();
+
 		// 启用深度测试，解决绘制物体穿模问题,这个实际只需要执行一次就可以了，只有在不断切换开启和关闭状态时才需要不断变换
 		glEnable(GL_DEPTH_TEST);
 
@@ -207,8 +239,8 @@ int main() {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// 启用面剔除
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_FRONT);
 
 		// 渲染
 		// 创建模型矩阵
@@ -257,6 +289,18 @@ int main() {
 			shader.setMatrix4("model", glm::value_ptr(model));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
+
+		frameBuff.Unbind();
+
+		// 清除颜色
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		screenShader.Use();
+		glBindVertexArray(screenVAO);
+		glDisable(GL_DEPTH_TEST);
+		glBindTexture(GL_TEXTURE_2D, frameBuff.getTexture());
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
