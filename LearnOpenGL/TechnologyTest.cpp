@@ -8,6 +8,7 @@ void TechnologyTest::TestAll()
 	TestDepthTest();
 	//TestStenchTest();
 	//TestBlend();
+	//TestCullFace();
 }
 
 void TechnologyTest::TestPolygonMode()
@@ -105,4 +106,25 @@ void TechnologyTest::TestBlend()
 		默认是ADD
 	*/
 	glBlendEquation(GL_FUNC_ADD);
+}
+
+void TechnologyTest::TestCullFace()
+{
+	/*	启用面剔除
+		1. OpenGL默认面剔除是关闭的
+		2. 面剔除的原理是用三角形顶点的绘制顺序判断的
+	*/
+	glEnable(GL_CULL_FACE);
+	/*	设置剔除面的类型，可选参数：
+		GL_BACK：只剔除背向面。
+		GL_FRONT：只剔除正向面。
+		GL_FRONT_AND_BACK：剔除正向面和背向面。
+		默认GL_BACK
+	*/
+	glCullFace(GL_FRONT);
+	/*	设置那些面为正向面，可选参数：
+		GL_CCW：逆时针
+		GL_CW：顺时针
+	*/
+	glFrontFace(GL_CCW);
 }

@@ -19,5 +19,6 @@ private:
 	void TestDepthTest();
 	void TestStenchTest();
 	void TestBlend();
+	void TestCullFace();
 };
 
