@@ -125,6 +125,13 @@ int main() {
 		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
 		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 	};
+
+	vector<glm::vec3> vegetation;
+	vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+	vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
+	vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
+	vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
+	vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
 	
 	// 生成shader对象
 	Shader shader("model.vert", "model.frag");
@@ -140,8 +147,17 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	// 草VAO
+	unsigned int vegetationVAO;
+	glGenVertexArrays(1, &vegetationVAO);
+	glBindVertexArray(vegetationVAO);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	// 底板VAO
 	unsigned int planeVAO, planeVBO;
@@ -152,12 +168,13 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	// 加载贴图
 	unsigned int cubeTexture = loadTexture("texture/container2.png");
 	unsigned int planeTexture = loadTexture("texture/wall.jpg");
+	unsigned int grassTexture = loadTexture("texture/grass.png");
 
 	shader.Use();
 	shader.setInt("texture1", 0);
@@ -180,17 +197,10 @@ int main() {
 		// 启用深度测试，解决绘制物体穿模问题,这个实际只需要执行一次就可以了，只有在不断切换开启和关闭状态时才需要不断变换
 		glEnable(GL_DEPTH_TEST);
 
-		// 启用模板测试
-		glEnable(GL_STENCIL_TEST);
-		// 模板值初始为0，不等于的时候更新即正常绘制
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		// 深度测试通过时替换模板值为ref值
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
 		// 清屏
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		// 通常颜色是需要每帧清除的，深度和模板只有在开启的时候才需要每帧清除
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// 渲染
 		// 创建模型矩阵
@@ -202,9 +212,6 @@ int main() {
 		// 创建投影矩阵
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-		// 禁用模板值的写入，即排除地板绘制对箱子的影响
-		glStencilMask(0x00);
 
 		// 使用着色器
 		shader.Use();
@@ -219,47 +226,29 @@ int main() {
 		shader.setMatrix4("model", glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		// 定义所有通过模板测试的片段都要更新为1，即获得箱子原本的模板值
-		glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
-		glStencilMask(0xFF); // 启用模板缓冲写入
-
 		// 绘制箱子
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		shader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < vegetation.size(); i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, vegetation[i]);
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.01f));
+			shader.setMatrix4("model", glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		// 模板值不等于1的片段要更新模板深度为1，即大箱子多出的部分模板值会为1，其他都会变成0
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00); // 禁止模板缓冲的写入
-		glDisable(GL_DEPTH_TEST);
-
-		outlineShader.Use();
-		outlineShader.setMatrix4("view", glm::value_ptr(view));
-		outlineShader.setMatrix4("projection", glm::value_ptr(projection));
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.02f, 1.02f, 1.02f));
-		outlineShader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.02f, 1.02f, 1.02f));
-		outlineShader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		// 轮廓绘制结束，重新启用模板写入以及深度测试
-		glStencilMask(0xFF);
-		glEnable(GL_DEPTH_TEST);
+		// 绘制草
+		glBindVertexArray(vegetationVAO);
+		glBindTexture(GL_TEXTURE_2D, grassTexture);
+		for (unsigned int i = 0; i < vegetation.size(); i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, vegetation[i]);
+			shader.setMatrix4("model", glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
@@ -340,7 +329,7 @@ unsigned int loadTexture(const char* path)
 
 	// 加载图片
 	int width, height, nrChannels;
-	//stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
 
 	if (data) {
