@@ -44,3 +44,24 @@ void TechnologyTest::TestDepthTest()
 	// 设置深度测试通过条件：其他测试条件略
 	glDepthFunc(GL_LESS);
 }
+
+void TechnologyTest::TestStenchTest()
+{
+	// 启动模板测试
+	glEnable(GL_STENCIL_TEST);
+	// 设置模板测试掩码，掩码会与写入缓冲的模板做AND运算。
+	//glStencilMask(0x00);
+	// (测试条件（可选值：GL_NEVER、GL_LESS、GL_LEQUAL、GL_GREATER、GL_GEQUAL、GL_EQUAL、GL_NOTEQUAL和GL_ALWAYS），参考值（模板测试时用来比较的标准值），mask)
+	// 这条命令实际上定义了一个比较关系（模板值&mask后与参考值比较，并使用测试条件输出比较结果）
+	//glStencilFunc(GL_EQUAL, 1, 0xFF);
+	/*  如何更新缓冲（模板测试失败时采取的行动，模板测试通过单深度测试失败时采取的行动，模板测试和深度测试都通过时采取的行动）
+		GL_KEEP 保持当前储存的模板值
+		GL_ZERO 将模板值设置为0
+		GL_REPLACE 将模板值设置为glStencilFunc函数设置的ref值
+		GL_INCR 如果模板值小于最大值则将模板值加1
+		GL_INCR_WRAP 与GL_INCR一样，但如果模板值超过了最大值则归零
+		GL_DECR 如果模板值大于最小值则将模板值减1
+		GL_DECR_WRAP 与GL_DECR一样，但如果模板值小于0则将其设置为最大值
+		GL_INVERT 按位翻转当前的模板缓冲值 */
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+}

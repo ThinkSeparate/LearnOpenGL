@@ -178,10 +178,13 @@ int main() {
 		// 启用深度测试，解决绘制物体穿模问题,这个实际只需要执行一次就可以了，只有在不断切换开启和关闭状态时才需要不断变换
 		glEnable(GL_DEPTH_TEST);
 
+		// 启用模板测试
+		glEnable(GL_STENCIL_TEST);
+
 		// 清屏
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		// 清除深度缓存是每一帧都要执行的，如果你希望绘制正确
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// 通常颜色是需要每帧清除的，深度和模板只有在开启的时候才需要每帧清除
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		// 渲染
 		// 创建模型矩阵

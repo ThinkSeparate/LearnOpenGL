@@ -17,5 +17,6 @@ private:
 	void TestMaxVertexAttribs();
 	void TestMatrix();
 	void TestDepthTest();
+	void TestStenchTest();
 };
 
