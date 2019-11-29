@@ -73,48 +73,47 @@ int main() {
 	framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
 
 	float cubeVertices[] = {
-		// Back face
-	   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right         
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-	   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
-	   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-	   // Front face
-	   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-	   -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
-	   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-	   // Left face
-	   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-	   -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
-	   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-	   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-	   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-	   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-	   // Right face
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right         
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left     
-	   // Bottom face
-	   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-	   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-	   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-	   // Top face
-	   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right     
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-	   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-	   -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left        
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
 	float planeVertices[] = {
@@ -207,10 +206,10 @@ int main() {
 	glBindVertexArray(cubeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// 草VAO
 	unsigned int vegetationVAO;
@@ -328,16 +327,17 @@ int main() {
 		shader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制地板
-		glBindVertexArray(planeVAO);
+		/*glBindVertexArray(planeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, planeTexture);
 		model = glm::mat4(1.0f);
 		shader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
 		// 绘制箱子
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 		for (unsigned int i = 0; i < vegetation.size(); i++)
 		{
@@ -349,7 +349,7 @@ int main() {
 		}
 
 		// 绘制草
-		glBindVertexArray(vegetationVAO);
+		/*glBindVertexArray(vegetationVAO);
 		glBindTexture(GL_TEXTURE_2D, grassTexture);
 		for (unsigned int i = 0; i < vegetation.size(); i++)
 		{
@@ -357,7 +357,7 @@ int main() {
 			model = glm::translate(model, vegetation[i]);
 			shader.setMatrix4("model", glm::value_ptr(model));
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-		}
+		}*/
 
 		// 绘制背景（天空盒），最后绘制是因为我们修改了shader的深度
 		glDepthMask(GL_FALSE);
