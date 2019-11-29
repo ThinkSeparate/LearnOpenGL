@@ -202,6 +202,10 @@ int main() {
 		// 通常颜色是需要每帧清除的，深度和模板只有在开启的时候才需要每帧清除
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// 启用混合
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		// 渲染
 		// 创建模型矩阵
 		glm::mat4 model;

@@ -18,5 +18,6 @@ private:
 	void TestMatrix();
 	void TestDepthTest();
 	void TestStenchTest();
+	void TestBlend();
 };
 

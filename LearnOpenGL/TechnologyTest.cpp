@@ -1,4 +1,4 @@
-#include "TechnologyTest.h"
+ï»¿#include "TechnologyTest.h"
 
 void TechnologyTest::TestAll()
 {
@@ -7,17 +7,18 @@ void TechnologyTest::TestAll()
 	TestMatrix();
 	TestDepthTest();
 	//TestStenchTest();
+	//TestBlend();
 }
 
 void TechnologyTest::TestPolygonMode()
 {
-	// Ê¹ÓÃÏß¿òÄ£Ê½»æÖÆ
+	// ä½¿ç”¨çº¿æ¡†æ¨¡å¼ç»˜åˆ¶
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void TechnologyTest::TestMaxVertexAttribs()
 {
-	// ²éÑ¯¿ÉÒÔÊ¹ÓÃµÄ×î´ó¶¥µãÊôĞÔ¸öÊı
+	// æŸ¥è¯¢å¯ä»¥ä½¿ç”¨çš„æœ€å¤§é¡¶ç‚¹å±æ€§ä¸ªæ•°
 	int nrAttributes;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
@@ -25,44 +26,83 @@ void TechnologyTest::TestMaxVertexAttribs()
 
 void TechnologyTest::TestMatrix()
 {
-	/*	glm²âÊÔ´úÂë	*/
+	/*	glmæµ‹è¯•ä»£ç 	*/
 	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-	// ³õÊ¼»¯Ò»¸öÄ¬ÈÏµÄÆ½ÒÆ¾ØÕó
+	// åˆå§‹åŒ–ä¸€ä¸ªé»˜è®¤çš„å¹³ç§»çŸ©é˜µ
 	glm::mat4 trans;
-	// ¶ÔÆ½ÒÆ±ä»»¾ØÕóÉèÖÃÆ½ÒÆ
+	// å¯¹å¹³ç§»å˜æ¢çŸ©é˜µè®¾ç½®å¹³ç§»
 	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-	// ÓÃÆ½ÒÆ¾ØÕó²Ù×÷ÎÒÃÇµÄ²âÊÔ¾ØÕó
+	// ç”¨å¹³ç§»çŸ©é˜µæ“ä½œæˆ‘ä»¬çš„æµ‹è¯•çŸ©é˜µ
 	vec = trans * vec;
 	std::cout << vec.x << vec.y << vec.z << std::endl;
 }
 
 void TechnologyTest::TestDepthTest()
 {
-	// Ê×ÏÈÒª¿ªÆôÉî¶È²âÊÔ
+	// é¦–å…ˆè¦å¼€å¯æ·±åº¦æµ‹è¯•
 	glEnable(GL_DEPTH_TEST);
-	// ÉèÖÃÉî¶È»º³åÎªÖ»¶ÁÀàĞÍ
+	// è®¾ç½®æ·±åº¦ç¼“å†²ä¸ºåªè¯»ç±»å‹
 	//glDepthMask(GL_FALSE);
-	// ÉèÖÃÉî¶È²âÊÔÍ¨¹ıÌõ¼ş£ºÆäËû²âÊÔÌõ¼şÂÔ
+	// è®¾ç½®æ·±åº¦æµ‹è¯•é€šè¿‡æ¡ä»¶ï¼šå…¶ä»–æµ‹è¯•æ¡ä»¶ç•¥
 	glDepthFunc(GL_LESS);
 }
 
 void TechnologyTest::TestStenchTest()
 {
-	// Æô¶¯Ä£°å²âÊÔ
+	// å¯åŠ¨æ¨¡æ¿æµ‹è¯•
 	glEnable(GL_STENCIL_TEST);
-	// ÉèÖÃÄ£°å²âÊÔÑÚÂë£¬ÑÚÂë»áÓëĞ´Èë»º³åµÄÄ£°å×öANDÔËËã¡£
+	// è®¾ç½®æ¨¡æ¿æµ‹è¯•æ©ç ï¼Œæ©ç ä¼šä¸å†™å…¥ç¼“å†²çš„æ¨¡æ¿åšANDè¿ç®—ã€‚
 	//glStencilMask(0x00);
-	// (²âÊÔÌõ¼ş£¨¿ÉÑ¡Öµ£ºGL_NEVER¡¢GL_LESS¡¢GL_LEQUAL¡¢GL_GREATER¡¢GL_GEQUAL¡¢GL_EQUAL¡¢GL_NOTEQUALºÍGL_ALWAYS£©£¬²Î¿¼Öµ£¨Ä£°å²âÊÔÊ±ÓÃÀ´±È½ÏµÄ±ê×¼Öµ£©£¬mask)
-	// ÕâÌõÃüÁîÊµ¼ÊÉÏ¶¨ÒåÁËÒ»¸ö±È½Ï¹ØÏµ£¨Ä£°åÖµ&maskºóÓë²Î¿¼Öµ±È½Ï£¬²¢Ê¹ÓÃ²âÊÔÌõ¼şÊä³ö±È½Ï½á¹û£©
+	// (æµ‹è¯•æ¡ä»¶ï¼ˆå¯é€‰å€¼ï¼šGL_NEVERã€GL_LESSã€GL_LEQUALã€GL_GREATERã€GL_GEQUALã€GL_EQUALã€GL_NOTEQUALå’ŒGL_ALWAYSï¼‰ï¼Œå‚è€ƒå€¼ï¼ˆæ¨¡æ¿æµ‹è¯•æ—¶ç”¨æ¥æ¯”è¾ƒçš„æ ‡å‡†å€¼ï¼‰ï¼Œmask)
+	// è¿™æ¡å‘½ä»¤å®é™…ä¸Šå®šä¹‰äº†ä¸€ä¸ªæ¯”è¾ƒå…³ç³»ï¼ˆæ¨¡æ¿å€¼&maskåä¸å‚è€ƒå€¼æ¯”è¾ƒï¼Œå¹¶ä½¿ç”¨æµ‹è¯•æ¡ä»¶è¾“å‡ºæ¯”è¾ƒç»“æœï¼‰
 	//glStencilFunc(GL_EQUAL, 1, 0xFF);
-	/*  ÈçºÎ¸üĞÂ»º³å£¨Ä£°å²âÊÔÊ§°ÜÊ±²ÉÈ¡µÄĞĞ¶¯£¬Ä£°å²âÊÔÍ¨¹ıµ¥Éî¶È²âÊÔÊ§°ÜÊ±²ÉÈ¡µÄĞĞ¶¯£¬Ä£°å²âÊÔºÍÉî¶È²âÊÔ¶¼Í¨¹ıÊ±²ÉÈ¡µÄĞĞ¶¯£©
-		GL_KEEP ±£³Öµ±Ç°´¢´æµÄÄ£°åÖµ
-		GL_ZERO ½«Ä£°åÖµÉèÖÃÎª0
-		GL_REPLACE ½«Ä£°åÖµÉèÖÃÎªglStencilFuncº¯ÊıÉèÖÃµÄrefÖµ
-		GL_INCR Èç¹ûÄ£°åÖµĞ¡ÓÚ×î´óÖµÔò½«Ä£°åÖµ¼Ó1
-		GL_INCR_WRAP ÓëGL_INCRÒ»Ñù£¬µ«Èç¹ûÄ£°åÖµ³¬¹ıÁË×î´óÖµÔò¹éÁã
-		GL_DECR Èç¹ûÄ£°åÖµ´óÓÚ×îĞ¡ÖµÔò½«Ä£°åÖµ¼õ1
-		GL_DECR_WRAP ÓëGL_DECRÒ»Ñù£¬µ«Èç¹ûÄ£°åÖµĞ¡ÓÚ0Ôò½«ÆäÉèÖÃÎª×î´óÖµ
-		GL_INVERT °´Î»·­×ªµ±Ç°µÄÄ£°å»º³åÖµ */
+	/*  å¦‚ä½•æ›´æ–°ç¼“å†²ï¼ˆæ¨¡æ¿æµ‹è¯•å¤±è´¥æ—¶é‡‡å–çš„è¡ŒåŠ¨ï¼Œæ¨¡æ¿æµ‹è¯•é€šè¿‡å•æ·±åº¦æµ‹è¯•å¤±è´¥æ—¶é‡‡å–çš„è¡ŒåŠ¨ï¼Œæ¨¡æ¿æµ‹è¯•å’Œæ·±åº¦æµ‹è¯•éƒ½é€šè¿‡æ—¶é‡‡å–çš„è¡ŒåŠ¨ï¼‰
+		GL_KEEP ä¿æŒå½“å‰å‚¨å­˜çš„æ¨¡æ¿å€¼
+		GL_ZERO å°†æ¨¡æ¿å€¼è®¾ç½®ä¸º0
+		GL_REPLACE å°†æ¨¡æ¿å€¼è®¾ç½®ä¸ºglStencilFuncå‡½æ•°è®¾ç½®çš„refå€¼
+		GL_INCR å¦‚æœæ¨¡æ¿å€¼å°äºæœ€å¤§å€¼åˆ™å°†æ¨¡æ¿å€¼åŠ 1
+		GL_INCR_WRAP ä¸GL_INCRä¸€æ ·ï¼Œä½†å¦‚æœæ¨¡æ¿å€¼è¶…è¿‡äº†æœ€å¤§å€¼åˆ™å½’é›¶
+		GL_DECR å¦‚æœæ¨¡æ¿å€¼å¤§äºæœ€å°å€¼åˆ™å°†æ¨¡æ¿å€¼å‡1
+		GL_DECR_WRAP ä¸GL_DECRä¸€æ ·ï¼Œä½†å¦‚æœæ¨¡æ¿å€¼å°äº0åˆ™å°†å…¶è®¾ç½®ä¸ºæœ€å¤§å€¼
+		GL_INVERT æŒ‰ä½ç¿»è½¬å½“å‰çš„æ¨¡æ¿ç¼“å†²å€¼ */
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+}
+
+void TechnologyTest::TestBlend()
+{
+	/*å¯ç”¨æ··åˆ:æ··åˆæ–¹ç¨‹å¦‚ä¸‹
+		C(result) = C(source) âˆ— F(source) + C(destination) âˆ— F(destination);
+		C(source)ï¼šæºé¢œè‰²å‘é‡ã€‚è¿™æ˜¯æºè‡ªçº¹ç†çš„é¢œè‰²å‘é‡ã€‚
+		C(destination)ï¼šç›®æ ‡é¢œè‰²å‘é‡ã€‚è¿™æ˜¯å½“å‰å‚¨å­˜åœ¨é¢œè‰²ç¼“å†²ä¸­çš„é¢œè‰²å‘é‡ã€‚
+		F(source)ï¼šæºå› å­å€¼ã€‚æŒ‡å®šäº†alphaå€¼å¯¹æºé¢œè‰²çš„å½±å“ã€‚
+		F(destination)ï¼šç›®æ ‡å› å­å€¼ã€‚æŒ‡å®šäº†alphaå€¼å¯¹ç›®æ ‡é¢œè‰²çš„å½±å“ã€‚
+	*/
+	glEnable(GL_BLEND);
+	/*	è®¾ç½®æ··åˆå› å­é€‰é¡¹ï¼š
+		GL_ZEROï¼šå› å­ç­‰äº0
+		GL_ONEï¼šå› å­ç­‰äº1
+		GL_SRC_COLORï¼šå› å­ç­‰äºæºé¢œè‰²å‘é‡C(source)
+		GL_ONE_MINUS_SRC_COLORï¼šå› å­ç­‰äº1âˆ’C(source)
+		GL_DST_COLORï¼šå› å­ç­‰äºç›®æ ‡é¢œè‰²å‘é‡C(source)
+		GL_ONE_MINUS_DST_COLORï¼šå› å­ç­‰äº1âˆ’C(destination)
+		GL_SRC_ALPHAï¼šå› å­ç­‰äºC(source)çš„alphaåˆ†é‡
+		GL_ONE_MINUS_SRC_ALPHAï¼šå› å­ç­‰äº1âˆ’C(source)çš„alphaåˆ†é‡
+		GL_DST_ALPHAï¼šå› å­ç­‰äºC(destination)çš„alphaåˆ†é‡
+		GL_ONE_MINUS_DST_ALPHAï¼šå› å­ç­‰äº1âˆ’C(destination)çš„alphaåˆ†é‡
+		GL_CONSTANT_COLORï¼šå› å­ç­‰äºå¸¸æ•°é¢œè‰²å‘é‡C(constant)
+		GL_ONE_MINUS_CONSTANT_COLORï¼š å› å­ç­‰äº1âˆ’C(constant)
+		GL_CONSTANT_ALPHAï¼š å› å­ç­‰äºC(constant)çš„alphaåˆ†é‡
+		GL_ONE_MINUS_CONSTANT_ALPHAï¼š å› å­ç­‰äº1âˆ’C(constant)çš„alphaåˆ†é‡
+		å…¶ä¸­C(constant)è¦é€šè¿‡glBlendColoræ¥è®¾ç½®
+	*/
+	glBlendFunc(GL_ONE, GL_ZERO);
+	// è¿™ä¸ªæ–¹æ³•çš„æ··åˆæ–¹å¼å’Œä¸Šé¢çš„ç›¸åŒï¼Œåªæ˜¯å¯ä»¥ä¸ºé¢œè‰²å’Œé€æ˜åº¦åˆ†åˆ«è®¾ç½®æ··åˆ
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+	/*è®¾ç½®æ··åˆæ–¹ç¨‹çš„æ¨¡å¼
+		GL_FUNC_ADDï¼šé»˜è®¤é€‰é¡¹ï¼Œå°†ä¸¤ä¸ªåˆ†é‡ç›¸åŠ ï¼šC(result) = Src+Dst;
+		GL_FUNC_SUBTRACTï¼šå°†ä¸¤ä¸ªåˆ†é‡ç›¸å‡ï¼š C(result) = Src-Dst;
+		GL_FUNC_REVERSE_SUBTRACTï¼šå°†ä¸¤ä¸ªåˆ†é‡ç›¸å‡ï¼Œä½†é¡ºåºç›¸åï¼š C(result) = Dst-Src;
+		é»˜è®¤æ˜¯ADD
+	*/
+	glBlendEquation(GL_FUNC_ADD);
 }
