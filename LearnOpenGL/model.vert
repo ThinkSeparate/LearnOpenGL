@@ -10,18 +10,12 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // 输出值
-out vec3 FragPos;
-out vec3 Normal;
 out vec2 TexCoords;
 
 void main()
 {
 	// 计算顶点position
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
-	// 计算片段position
-	FragPos = vec3(model * vec4(aPos, 1.0));
-	// 计算法向量：最好不要在glsl里面写矩阵转置，太浪费性能
-	Normal = mat3(transpose(inverse(model))) * aNormal;
 	// 输出UV坐标
 	TexCoords = aTexCoords;
 };
