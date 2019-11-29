@@ -9,5 +9,10 @@ out vec4 FragColor;
 
 void main()
 {
-    FragColor = texture(texture1, TexCoords);
+	vec4 texColor = texture(texture1, TexCoords);
+	if (texColor.a < 0.1f) {
+		// 丢弃，保证片段不会被进一步处理，即透明片段不显示了
+		discard;
+	}
+    FragColor = texColor;
 };
