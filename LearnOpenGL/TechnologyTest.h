@@ -16,5 +16,6 @@ private:
 	void TestPolygonMode();
 	void TestMaxVertexAttribs();
 	void TestMatrix();
+	void TestDepthTest();
 };
 

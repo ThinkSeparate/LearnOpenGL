@@ -5,6 +5,7 @@ void TechnologyTest::TestAll()
 	//testPolygonMode();
 	TestMaxVertexAttribs();
 	TestMatrix();
+	TestDepthTest();
 }
 
 void TechnologyTest::TestPolygonMode()
@@ -32,4 +33,14 @@ void TechnologyTest::TestMatrix()
 	// 用平移矩阵操作我们的测试矩阵
 	vec = trans * vec;
 	std::cout << vec.x << vec.y << vec.z << std::endl;
+}
+
+void TechnologyTest::TestDepthTest()
+{
+	// 首先要开启深度测试
+	glEnable(GL_DEPTH_TEST);
+	// 设置深度缓冲为只读类型
+	//glDepthMask(GL_FALSE);
+	// 设置深度测试通过条件：其他测试条件略
+	glDepthFunc(GL_LESS);
 }
