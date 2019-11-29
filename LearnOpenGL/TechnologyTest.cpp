@@ -6,6 +6,7 @@ void TechnologyTest::TestAll()
 	TestMaxVertexAttribs();
 	TestMatrix();
 	TestDepthTest();
+	//TestStenchTest();
 }
 
 void TechnologyTest::TestPolygonMode()

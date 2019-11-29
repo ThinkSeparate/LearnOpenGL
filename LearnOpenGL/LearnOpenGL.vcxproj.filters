@@ -62,6 +62,12 @@
     <None Include="model.vert">
       <Filter>shader</Filter>
     </None>
+    <None Include="outline.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="outline.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

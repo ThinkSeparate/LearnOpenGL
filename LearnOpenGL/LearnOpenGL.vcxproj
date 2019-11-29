@@ -141,6 +141,8 @@
     <None Include="light.frag" />
     <None Include="light.vert" />
     <None Include="model.vert" />
+    <None Include="outline.frag" />
+    <None Include="outline.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />

@@ -128,6 +128,8 @@ int main() {
 	
 	// 生成shader对象
 	Shader shader("model.vert", "model.frag");
+	// 创建轮廓shader
+	Shader outlineShader("outline.vert", "outline.frag");
 
 	// 箱子VAO
 	unsigned int cubeVAO, cubeVBO;
@@ -180,6 +182,10 @@ int main() {
 
 		// 启用模板测试
 		glEnable(GL_STENCIL_TEST);
+		// 模板值初始为0，不等于的时候更新即正常绘制
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		// 深度测试通过时替换模板值为ref值
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 		// 清屏
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -197,10 +203,25 @@ int main() {
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
+		// 禁用模板值的写入，即排除地板绘制对箱子的影响
+		glStencilMask(0x00);
+
 		// 使用着色器
 		shader.Use();
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
+
+		// 绘制地板
+		glBindVertexArray(planeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, planeTexture);
+		model = glm::mat4(1.0f);
+		shader.setMatrix4("model", glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// 定义所有通过模板测试的片段都要更新为1，即获得箱子原本的模板值
+		glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
+		glStencilMask(0xFF); // 启用模板缓冲写入
 
 		// 绘制箱子
 		glBindVertexArray(cubeVAO);
@@ -216,13 +237,29 @@ int main() {
 		shader.setMatrix4("model", glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		// 绘制底板
-		glBindVertexArray(planeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, planeTexture);
+		// 模板值不等于1的片段要更新模板深度为1，即大箱子多出的部分模板值会为1，其他都会变成0
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00); // 禁止模板缓冲的写入
+		glDisable(GL_DEPTH_TEST);
+
+		outlineShader.Use();
+		outlineShader.setMatrix4("view", glm::value_ptr(view));
+		outlineShader.setMatrix4("projection", glm::value_ptr(projection));
 		model = glm::mat4(1.0f);
-		shader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.02f, 1.02f, 1.02f));
+		outlineShader.setMatrix4("model", glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.02f, 1.02f, 1.02f));
+		outlineShader.setMatrix4("model", glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// 轮廓绘制结束，重新启用模板写入以及深度测试
+		glStencilMask(0xFF);
+		glEnable(GL_DEPTH_TEST);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
