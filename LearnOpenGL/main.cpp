@@ -270,6 +270,8 @@ int main() {
 	SkyBox skybox(faces);
 	unsigned int skyTexture = skybox.getTexture();
 
+	Model nanosuit("model/nanosuit/nanosuit.obj");
+
 	// 创建帧缓冲
 	FrameBuffer frameBuff(READ_ADN_DRAW, SCR_WIDTH, SCR_HEIGHT, true, true, true);
 	frameBuff.Bind();
@@ -334,8 +336,15 @@ int main() {
 		shader.setMatrix4("model", glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 6);*/
 
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.setMatrix4("model", glm::value_ptr(model));
+		nanosuit.Draw(shader);
+
 		// 绘制箱子
-		glBindVertexArray(cubeVAO);
+		/*glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -346,7 +355,7 @@ int main() {
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.01f));
 			shader.setMatrix4("model", glm::value_ptr(model));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		}*/
 
 		// 绘制草
 		/*glBindVertexArray(vegetationVAO);
