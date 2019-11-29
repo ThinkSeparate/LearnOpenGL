@@ -22,6 +22,9 @@
     <Filter Include="model">
       <UniqueIdentifier>{a93218bf-7183-461e-859d-6c2981dc41ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="texture\skybox">
+      <UniqueIdentifier>{3c44c22a-4794-4ebb-9af1-c2b67c3591f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,6 +54,9 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.vert">
@@ -77,6 +83,12 @@
     <None Include="screen.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="skybox.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="skybox.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -97,6 +109,9 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
@@ -113,6 +128,24 @@
     </Image>
     <Image Include="texture\grass.png">
       <Filter>texture</Filter>
+    </Image>
+    <Image Include="texture\skybox\back.jpg">
+      <Filter>texture\skybox</Filter>
+    </Image>
+    <Image Include="texture\skybox\bottom.jpg">
+      <Filter>texture\skybox</Filter>
+    </Image>
+    <Image Include="texture\skybox\front.jpg">
+      <Filter>texture\skybox</Filter>
+    </Image>
+    <Image Include="texture\skybox\left.jpg">
+      <Filter>texture\skybox</Filter>
+    </Image>
+    <Image Include="texture\skybox\right.jpg">
+      <Filter>texture\skybox</Filter>
+    </Image>
+    <Image Include="texture\skybox\top.jpg">
+      <Filter>texture\skybox</Filter>
     </Image>
   </ItemGroup>
 </Project>

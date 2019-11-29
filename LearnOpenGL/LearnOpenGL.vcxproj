@@ -134,6 +134,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TechnologyTest.cpp" />
   </ItemGroup>
@@ -146,6 +147,8 @@
     <None Include="outline.vert" />
     <None Include="screen.frag" />
     <None Include="screen.vert" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -153,6 +156,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="TechnologyTest.h" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +164,12 @@
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
     <Image Include="texture\grass.png" />
+    <Image Include="texture\skybox\back.jpg" />
+    <Image Include="texture\skybox\bottom.jpg" />
+    <Image Include="texture\skybox\front.jpg" />
+    <Image Include="texture\skybox\left.jpg" />
+    <Image Include="texture\skybox\right.jpg" />
+    <Image Include="texture\skybox\top.jpg" />
     <Image Include="wall.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

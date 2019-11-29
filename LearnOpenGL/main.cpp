@@ -16,6 +16,7 @@
 #include "Camera.h"	// 引用摄像机类
 #include "Shader.h"	// 引用shader类
 #include "Model.h"
+#include "SkyBox.h"
 #include "TechnologyTest.h"	// 自定义的技术测试类：学习中需要使用很多新技术，测试性代码放在这个类里实现
 
 //----声明常量
@@ -138,6 +139,51 @@ int main() {
 		  1.0f,  1.0f,  1.0f, 1.0f
 	};
 
+	float skyboxVertices[] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
+
 	vector<glm::vec3> vegetation;
 	vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
 	vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
@@ -151,6 +197,8 @@ int main() {
 	Shader outlineShader("outline.vert", "outline.frag");
 	// 创建场景shader
 	Shader screenShader("screen.vert", "screen.frag");
+	// 创建天空盒shader
+	Shader skyShader("skybox.vert", "skybox.frag");
 
 	// 箱子VAO
 	unsigned int cubeVAO, cubeVBO;
@@ -197,10 +245,31 @@ int main() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
+	// 天空盒VAO
+	unsigned int skyVAO, skyVBO;
+	glGenVertexArrays(1, &skyVAO);
+	glGenBuffers(1, &skyVBO);
+	glBindVertexArray(skyVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
 	// 加载贴图
 	unsigned int cubeTexture = loadTexture("texture/container2.png");
 	unsigned int planeTexture = loadTexture("texture/wall.jpg");
 	unsigned int grassTexture = loadTexture("texture/grass.png");
+	vector<std::string> faces
+	{
+		"texture/skybox/right.jpg",
+		"texture/skybox/left.jpg",
+		"texture/skybox/top.jpg",
+		"texture/skybox/bottom.jpg",
+		"texture/skybox/front.jpg",
+		"texture/skybox/back.jpg"
+	};
+	SkyBox skybox(faces);
+	unsigned int skyTexture = skybox.getTexture();
 
 	// 创建帧缓冲
 	FrameBuffer frameBuff(READ_ADN_DRAW, SCR_WIDTH, SCR_HEIGHT, true, true, true);
@@ -253,6 +322,17 @@ int main() {
 		glm::mat4 projection;
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
+		// 绘制背景（天空盒）
+		glDepthMask(GL_FALSE);
+		skyShader.Use();
+		glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
+		skyShader.setMatrix4("view", glm::value_ptr(skeyView));
+		skyShader.setMatrix4("projection", glm::value_ptr(projection));
+		glBindVertexArray(skyVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDepthMask(GL_TRUE);
+		
 		// 使用着色器
 		shader.Use();
 		shader.setMatrix4("view", glm::value_ptr(view));
