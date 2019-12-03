@@ -16,6 +16,8 @@
 #include "Camera.h"	// 引用摄像机类
 #include "Shader.h"	// 引用shader类
 #include "Model.h"
+#include "VertexModels.h"
+#include "TextureLoader.h"
 #include "SkyBox.h"
 #include "TechnologyTest.h"	// 自定义的技术测试类：学习中需要使用很多新技术，测试性代码放在这个类里实现
 
@@ -28,7 +30,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-unsigned int loadTexture(const char* path);
 
 //----定义全局变量
 // 摄像机
@@ -71,127 +72,11 @@ int main() {
 	// OpenGl的坐标范围（-1，1），此处映射到（800，600）
 	//glViewport(0, 0, 800, 600);
 	framebuffer_size_callback(window, SCR_WIDTH, SCR_HEIGHT);
-
-	float cubeVertices[] = {
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
-
-	float planeVertices[] = {
-		// positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
-		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-
-		 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-		-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-		 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-	};
-
-	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-	 // positions   // texCoords
-		 -1.0f,  1.0f,  0.0f, 1.0f,
-		 -1.0f, -1.0f,  0.0f, 0.0f,
-		  1.0f, -1.0f,  1.0f, 0.0f,
-
-		 -1.0f,  1.0f,  0.0f, 1.0f,
-		  1.0f, -1.0f,  1.0f, 0.0f,
-		  1.0f,  1.0f,  1.0f, 1.0f
-	};
-
-	float skyboxVertices[] = {
-		// positions          
-		-1.0f,  1.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-
-		-1.0f, -1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f,
-		-1.0f, -1.0f,  1.0f,
-
-		-1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f, -1.0f,
-		 1.0f,  1.0f,  1.0f,
-		 1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f,  1.0f,
-		-1.0f,  1.0f, -1.0f,
-
-		-1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f, -1.0f,
-		 1.0f, -1.0f, -1.0f,
-		-1.0f, -1.0f,  1.0f,
-		 1.0f, -1.0f,  1.0f
-	};
-
-	vector<glm::vec3> vegetation;
-	vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
-	vegetation.push_back(glm::vec3(1.5f, 0.0f, 0.51f));
-	vegetation.push_back(glm::vec3(0.0f, 0.0f, 0.7f));
-	vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.3f));
-	vegetation.push_back(glm::vec3(0.5f, 0.0f, -0.6f));
 	
 	// 生成shader对象
 	Shader shader("model.vert", "model.frag");
+	// 生成顶点模型shader
+	Shader vertexModelShader("vertex.vert", "vertex.frag");
 	// 创建轮廓shader
 	Shader outlineShader("outline.vert", "outline.frag");
 	// 创建场景shader
@@ -199,65 +84,14 @@ int main() {
 	// 创建天空盒shader
 	Shader skyShader("skybox.vert", "skybox.frag");
 
-	// 箱子VAO
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// 草VAO
-	unsigned int vegetationVAO;
-	glGenVertexArrays(1, &vegetationVAO);
-	glBindVertexArray(vegetationVAO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	// 底板VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	// 场景VAO
-	unsigned int screenVAO, screenVBO;
-	glGenVertexArrays(1, &screenVAO);
-	glGenBuffers(1, &screenVBO);
-	glBindVertexArray(screenVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, screenVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// 天空盒VAO
-	unsigned int skyVAO, skyVBO;
-	glGenVertexArrays(1, &skyVAO);
-	glGenBuffers(1, &skyVBO);
-	glBindVertexArray(skyVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
+	// 顶点模型对象们
+	VertexModels vertexModels;
 
 	// 加载贴图
-	unsigned int cubeTexture = loadTexture("texture/container2.png");
-	unsigned int planeTexture = loadTexture("texture/wall.jpg");
-	unsigned int grassTexture = loadTexture("texture/grass.png");
+	TextureLoader textureLoader;
+	unsigned int cubeTexture = textureLoader.loadTexture("texture/container2.png");
+	unsigned int planeTexture = textureLoader.loadTexture("texture/wall.jpg");
+	unsigned int grassTexture = textureLoader.loadTexture("texture/grass.png", true);
 	vector<std::string> faces
 	{
 		"texture/skybox/right.jpg",
@@ -267,8 +101,7 @@ int main() {
 		"texture/skybox/front.jpg",
 		"texture/skybox/back.jpg"
 	};
-	SkyBox skybox(faces);
-	unsigned int skyTexture = skybox.getTexture();
+	unsigned int skyTexture = textureLoader.loadSkyBox(faces);
 
 	Model nanosuit("model/nanosuit/nanosuit.obj");
 
@@ -328,45 +161,31 @@ int main() {
 		shader.setMatrix4("view", glm::value_ptr(view));
 		shader.setMatrix4("projection", glm::value_ptr(projection));
 
-		// 绘制地板
-		/*glBindVertexArray(planeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, planeTexture);
-		model = glm::mat4(1.0f);
-		shader.setMatrix4("model", glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 6);*/
-
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-		shader.setMatrix4("model", glm::value_ptr(model));
-		nanosuit.Draw(shader);
+		// 绘制纳米人
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+		//model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		//shader.setMatrix4("model", glm::value_ptr(model));
+		//nanosuit.Draw(shader);
 
 		// 绘制箱子
-		/*glBindVertexArray(cubeVAO);
-		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		for (unsigned int i = 0; i < vegetation.size(); i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, vegetation[i]);
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.01f));
-			shader.setMatrix4("model", glm::value_ptr(model));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}*/
+		vertexModels.DrawBoxes(shader);
+
+		// 使用顶点模型shader
+		vertexModelShader.Use();
+		vertexModelShader.setMatrix4("view", glm::value_ptr(view));
+		vertexModelShader.setMatrix4("projection", glm::value_ptr(projection));
+
+		// 绘制地板
+		//glBindTexture(GL_TEXTURE_2D, planeTexture);
+		//vertexModels.DrawPlane(vertexModelShader);
 
 		// 绘制草
-		/*glBindVertexArray(vegetationVAO);
-		glBindTexture(GL_TEXTURE_2D, grassTexture);
-		for (unsigned int i = 0; i < vegetation.size(); i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, vegetation[i]);
-			shader.setMatrix4("model", glm::value_ptr(model));
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-		}*/
+		//glBindTexture(GL_TEXTURE_2D, grassTexture);
+		//vertexModels.DrawGrass(vertexModelShader);
 
 		// 绘制背景（天空盒），最后绘制是因为我们修改了shader的深度
 		glDepthMask(GL_FALSE);
@@ -375,9 +194,8 @@ int main() {
 		glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
 		skyShader.setMatrix4("view", glm::value_ptr(skeyView));
 		skyShader.setMatrix4("projection", glm::value_ptr(projection));
-		glBindVertexArray(skyVAO);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		vertexModels.DrawSkyBox(skyShader);
 		glDepthMask(GL_TRUE);
 
 		frameBuff.Unbind();
@@ -387,10 +205,9 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		screenShader.Use();
-		glBindVertexArray(screenVAO);
 		glDisable(GL_DEPTH_TEST);
 		glBindTexture(GL_TEXTURE_2D, frameBuff.getTexture());
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		vertexModels.DrawScreen(screenShader);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
@@ -461,50 +278,4 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-unsigned int loadTexture(const char* path)
-{
-	// 生成纹理对象
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	// 加载图片
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-
-	if (data) {
-		GLenum format;
-		if (nrChannels == 1)
-			format = GL_RED;
-		else if (nrChannels == 3)
-			format = GL_RGB;
-		else if (nrChannels == 4)
-			format = GL_RGBA;
-
-		// 绑定纹理
-		glBindTexture(GL_TEXTURE_2D, textureID);
-
-		// 生成纹理
-		// （纹理目标，纹理渐变级别，存储格式，纹理宽度，纹理高度，0，源数据格式，源数据类型， 图像数据）
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		// 生成多级渐变纹理
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		// 为当前绑定的纹理对象设置环绕、过滤方式
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-
-	// 释放图像内存
-	stbi_image_free(data);
-
-	return textureID;
 }

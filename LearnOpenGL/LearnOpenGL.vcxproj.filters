@@ -19,9 +19,6 @@
     <Filter Include="texture">
       <UniqueIdentifier>{26acb905-4adf-4847-b47e-257ad708cae7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="model">
-      <UniqueIdentifier>{a93218bf-7183-461e-859d-6c2981dc41ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="texture\skybox">
       <UniqueIdentifier>{3c44c22a-4794-4ebb-9af1-c2b67c3591f0}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,12 @@
     <ClCompile Include="SkyBox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexModels.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="light.vert">
@@ -89,6 +92,12 @@
     <None Include="skybox.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="vertex.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="vertex.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -110,6 +119,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexModels.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

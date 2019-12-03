@@ -137,6 +137,8 @@
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TechnologyTest.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="VertexModels.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="model.frag" />
@@ -149,6 +151,8 @@
     <None Include="screen.vert" />
     <None Include="skybox.frag" />
     <None Include="skybox.vert" />
+    <None Include="vertex.frag" />
+    <None Include="vertex.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -158,6 +162,8 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="TechnologyTest.h" />
+    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="VertexModels.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="awesomeface.png" />
