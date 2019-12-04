@@ -83,6 +83,8 @@ int main() {
 	Shader screenShader("screen.vert", "screen.frag");
 	// 创建天空盒shader
 	Shader skyShader("skybox.vert", "skybox.frag");
+	// 创建带几何着色器的点shader
+	Shader pointsShader("geometric.vert", "geometric.geom", "geometric.frag");
 
 	// 顶点模型对象们
 	VertexModels vertexModels;
@@ -157,9 +159,9 @@ int main() {
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		
 		// 使用着色器
-		shader.Use();
-		shader.setMatrix4("view", glm::value_ptr(view));
-		shader.setMatrix4("projection", glm::value_ptr(projection));
+		//shader.Use();
+		//shader.setMatrix4("view", glm::value_ptr(view));
+		//shader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制纳米人
 		//glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
@@ -170,14 +172,14 @@ int main() {
 		//nanosuit.Draw(shader);
 
 		// 绘制箱子
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		vertexModels.DrawBoxes(shader);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);
+		//glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		//vertexModels.DrawBoxes(shader);
 
 		// 使用顶点模型shader
-		vertexModelShader.Use();
-		vertexModelShader.setMatrix4("view", glm::value_ptr(view));
-		vertexModelShader.setMatrix4("projection", glm::value_ptr(projection));
+		//vertexModelShader.Use();
+		//vertexModelShader.setMatrix4("view", glm::value_ptr(view));
+		//vertexModelShader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制地板
 		//glBindTexture(GL_TEXTURE_2D, planeTexture);
@@ -188,15 +190,19 @@ int main() {
 		//vertexModels.DrawGrass(vertexModelShader);
 
 		// 绘制背景（天空盒），最后绘制是因为我们修改了shader的深度
-		glDepthMask(GL_FALSE);
-		glDepthFunc(GL_LEQUAL);
-		skyShader.Use();
-		glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
-		skyShader.setMatrix4("view", glm::value_ptr(skeyView));
-		skyShader.setMatrix4("projection", glm::value_ptr(projection));
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
-		vertexModels.DrawSkyBox(skyShader);
-		glDepthMask(GL_TRUE);
+		//glDepthMask(GL_FALSE);
+		//glDepthFunc(GL_LEQUAL);
+		//skyShader.Use();
+		//glm::mat4 skeyView = glm::mat4(glm::mat3(camera.getViewMatrix()));
+		//skyShader.setMatrix4("view", glm::value_ptr(skeyView));
+		//skyShader.setMatrix4("projection", glm::value_ptr(projection));
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
+		//vertexModels.DrawSkyBox(skyShader);
+		//glDepthMask(GL_TRUE);
+
+		// 绘制顶点
+		pointsShader.Use();
+		vertexModels.DrawPoints(pointsShader);
 
 		frameBuff.Unbind();
 

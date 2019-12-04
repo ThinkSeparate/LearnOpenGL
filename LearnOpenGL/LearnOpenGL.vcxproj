@@ -141,6 +141,9 @@
     <ClCompile Include="VertexModels.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="geometric.frag" />
+    <None Include="geometric.geom" />
+    <None Include="geometric.vert" />
     <None Include="model.frag" />
     <None Include="light.frag" />
     <None Include="light.vert" />

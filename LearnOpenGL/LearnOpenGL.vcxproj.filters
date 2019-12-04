@@ -98,6 +98,15 @@
     <None Include="vertex.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="geometric.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="geometric.geom">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="geometric.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

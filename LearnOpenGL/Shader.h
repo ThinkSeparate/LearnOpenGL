@@ -14,11 +14,9 @@
 class Shader
 {
 public:
-	// 程序ID
-	unsigned int ID;
-
 	// const关键字 不可修改
 	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	Shader(const GLchar* vertexPath, const GLchar* geometricPath, const GLchar* fragmentPath);
 	// 使用/激活程序
 	void Use();
 	// uniform工具函数
@@ -37,5 +35,19 @@ public:
 	void setFloat(const std::string& name, float value1, float value2, float value3, float value4) const;
 	void setMatrix4(const std::string& name, GLfloat* matrix) const;
 	~Shader();
+private:
+	// 着色器
+	unsigned int vertexShader;
+	unsigned int gemoetricShader;
+	unsigned int fragmentShader;
+	// 程序ID
+	unsigned int ID;
+	// 状态
+	int success;	// 成功状态
+	char infoLog[512];	// 错误信息
+	std::string LoadShaderCode(const GLchar* shaderPath, std::string shaderType);
+	void GenVertexShader(std::string vertexCode);
+	void GenGeometricShader(std::string geometricCode);
+	void GenFragmentShader(std::string fragmentCode);
 };
 

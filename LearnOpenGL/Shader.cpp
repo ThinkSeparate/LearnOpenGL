@@ -2,72 +2,13 @@
 
 Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 {
-	// 声明着色器代码字符串和文件指针
-	std::string vertexCode;
-	std::string fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
+	// 加载文件到字符串
+	std::string vertexCode = LoadShaderCode(vertexPath, "VERTEX");
+	std::string fragmentCode = LoadShaderCode(fragmentPath, "FRAGMENT");
 
-	// 保证ifstream对象可以抛出异常
-	vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-	fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-	try
-	{
-		// 打开文件
-		vShaderFile.open(vertexPath);
-		fShaderFile.open(fragmentPath);
-		std::stringstream vShaderStream, fShaderStream;
-		// 读取文件的缓存内容到流
-		vShaderStream << vShaderFile.rdbuf();
-		fShaderStream << fShaderFile.rdbuf();
-		// 关闭文件处理器
-		vShaderFile.close();
-		fShaderFile.close();
-		// 转换数据流到string
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
-	}
-	catch (std::ifstream::failure e)
-	{
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-	}
-	const char* vShaderCode = vertexCode.c_str();
-	const char* fShaderCode = fragmentCode.c_str();
-
-	// 生成顶点着色器对象
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	// 绑定顶点着色器源码到顶点着色器对象上
-	glShaderSource(vertexShader, 1, &vShaderCode, NULL);
-	// 编译顶点着色器
-	glCompileShader(vertexShader);
-
-	int success;
-	char infoLog[512];
-
-	// 获取顶点着色器编译状态
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	// 生成片段着色器
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// 绑定片段着色器源码到片段着色器对象
-	glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
-	// 编译片段着色器
-	glCompileShader(fragmentShader);
-
-	// 获取片段着色器编译状态
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+	// 生成着色器对象
+	GenVertexShader(vertexCode);
+	GenFragmentShader(fragmentCode);
 
 	// 生成着色器程序对象
 	ID = glCreateProgram();
@@ -86,6 +27,40 @@ Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
 
 	// 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
 	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+Shader::Shader(const GLchar* vertexPath, const GLchar* geometricPath, const GLchar* fragmentPath)
+{
+	// 声明着色器代码字符串和文件指针
+	std::string vertexCode = LoadShaderCode(vertexPath, "VERTEX");
+	std::string geometricCode = LoadShaderCode(geometricPath, "GEOMETRIC");
+	std::string fragmentCode = LoadShaderCode(fragmentPath, "FRAGMENT");
+
+	// 生成着色器对象
+	GenVertexShader(vertexCode);
+	GenGeometricShader(geometricCode);
+	GenFragmentShader(fragmentCode);
+
+	// 生成着色器程序对象
+	ID = glCreateProgram();
+	// 绑定着色器对象到着色器程序上
+	glAttachShader(ID, vertexShader);
+	glAttachShader(ID, gemoetricShader);
+	glAttachShader(ID, fragmentShader);
+	// 链接着色器
+	glLinkProgram(ID);
+
+	// 获取着色器程序链接状态
+	glGetShaderiv(ID, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(ID, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINK_FAILED\n" << infoLog << std::endl;
+	}
+
+	// 删除着色器，它们已经链接到我们的程序中了，已经不再需要了
+	glDeleteShader(vertexShader);
+	glDeleteShader(gemoetricShader);
 	glDeleteShader(fragmentShader);
 }
 
@@ -168,4 +143,91 @@ void Shader::setMatrix4(const std::string& name, GLfloat* matrix) const
 
 Shader::~Shader()
 {
+}
+
+std::string Shader::LoadShaderCode(const GLchar* shaderPath, std::string shaderType)
+{
+	// 声明着色器代码字符串和文件指针
+	std::string shaderCode;
+	std::ifstream shaderFile;
+
+	// 保证ifstream对象可以抛出异常
+	shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+	try
+	{
+		// 打开文件
+		shaderFile.open(shaderPath);
+		std::stringstream shaderStream;
+		// 读取文件的缓存内容到流
+		shaderStream << shaderFile.rdbuf();
+		// 关闭文件处理器
+		shaderFile.close();
+		// 转换数据流到string
+		shaderCode = shaderStream.str();
+	}
+	catch (std::ifstream::failure e)
+	{
+		std::cout << "ERROR::" << shaderType << "::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+	}
+	return shaderCode;
+}
+
+void Shader::GenVertexShader(std::string vertexCode)
+{
+	const char* vShaderCode = vertexCode.c_str();
+
+	// 生成顶点着色器对象
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	// 绑定顶点着色器源码到顶点着色器对象上
+	glShaderSource(vertexShader, 1, &vShaderCode, NULL);
+	// 编译顶点着色器
+	glCompileShader(vertexShader);
+
+	// 获取顶点着色器编译状态
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+}
+
+void Shader::GenGeometricShader(std::string geometricCode)
+{
+	const char* gShaderCode = geometricCode.c_str();
+
+	// 生成几何着色器对象
+	gemoetricShader = glCreateShader(GL_GEOMETRY_SHADER);
+
+	// 绑定几何着色器源码到顶点着色器对象上
+	glShaderSource(gemoetricShader, 1, &gShaderCode, NULL);
+	// 编译几何着色器
+	glCompileShader(gemoetricShader);
+
+	// 获取几何着色器编译状态
+	glGetShaderiv(gemoetricShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(gemoetricShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::GEOMETRIC::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+}
+
+void Shader::GenFragmentShader(std::string fragmentCode)
+{
+	const char* fShaderCode = fragmentCode.c_str();
+
+	// 生成片段着色器
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	// 绑定片段着色器源码到片段着色器对象
+	glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
+	// 编译片段着色器
+	glCompileShader(fragmentShader);
+
+	// 获取片段着色器编译状态
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
 }

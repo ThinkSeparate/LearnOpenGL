@@ -22,6 +22,7 @@ public:
 	void DrawPlane(Shader shader);
 	void DrawScreen(Shader shader);
 	void DrawSkyBox(Shader shader);
+	void DrawPoints(Shader shader);
 private:
 	TextureLoader textureLoader;
 	glm::mat4 model;
@@ -31,15 +32,12 @@ private:
 	unsigned int planeVAO, planeVBO;
 	unsigned int screenVAO, screenVBO;
 	unsigned int skyVAO, skyVBO;
-	unsigned int cubeTexture;
-	unsigned int planeTexture;
-	unsigned int grassTexture;
-	unsigned int skyTexture;
+	unsigned int pointVAO, pointVBO;
 	void InitBoxes();
 	void InitGrass();
 	void InitPlane();
 	void InitScreen();
 	void InitSkyBox();
-	void LoadTextures();
+	void InitPoints();
 };
 

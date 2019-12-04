@@ -13,6 +13,7 @@ VertexModels::VertexModels()
 	InitPlane();
 	InitScreen();
 	InitSkyBox();
+	InitPoints();
 }
 
 void VertexModels::DrawBoxes(Shader shader)
@@ -60,6 +61,12 @@ void VertexModels::DrawSkyBox(Shader shader)
 {
 	glBindVertexArray(skyVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void VertexModels::DrawPoints(Shader shader)
+{
+	glBindVertexArray(pointVAO);
+	glDrawArrays(GL_POINTS, 0, 4);
 }
 
 void VertexModels::InitBoxes()
@@ -279,4 +286,23 @@ void VertexModels::InitSkyBox()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+}
+
+void VertexModels::InitPoints()
+{
+	float points[] = {
+	-0.5f,  0.5f, // 左上
+	 0.5f,  0.5f, // 右上
+	 0.5f, -0.5f, // 右下
+	-0.5f, -0.5f  // 左下
+	};
+	glGenVertexArrays(1, &pointVAO);
+	glGenBuffers(1, &pointVBO);
+	glBindVertexArray(pointVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
 }
