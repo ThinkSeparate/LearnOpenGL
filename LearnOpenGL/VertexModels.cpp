@@ -66,7 +66,15 @@ void VertexModels::DrawSkyBox(Shader shader)
 void VertexModels::DrawPoints(Shader shader)
 {
 	glBindVertexArray(pointVAO);
-	glDrawArrays(GL_POINTS, 0, 4);
+	glDrawArrays(GL_POINTS, 0, 2);
+	// 使用线框模式绘制
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDrawArrays(GL_POINTS, 2, 1);
+	// 使用点模式绘制
+	glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	glDrawArrays(GL_POINTS, 3, 1);
+	// 切回填充模式
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void VertexModels::InitBoxes()

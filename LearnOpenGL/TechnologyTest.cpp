@@ -13,7 +13,7 @@ void TechnologyTest::TestAll()
 
 void TechnologyTest::TestPolygonMode()
 {
-	// 使用线框模式绘制
+	// 使用线框模式绘制(面，模式（GL_POINT，GL_LINE，GL_FILL）)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 

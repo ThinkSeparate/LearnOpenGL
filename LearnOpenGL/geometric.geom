@@ -3,16 +3,25 @@
 // 声明从顶点着色器输入的图元类型（points，lines，lines_adjacency，triangles，triangles_adjacency）
 layout(points) in;
 // 声明输出图元类型（points，line_strip，triangle_strip），以及图元支持的最大顶点数，多余的顶点不会绘制
-layout(line_strip, max_vertices = 2) out;
+layout(triangle_strip, max_vertices = 5) out;
+
+void build_house(vec4 position);
 
 void main() {
-	gl_Position = gl_in[0].gl_Position + vec4(-0.1, 0.0, 0.0, 0.0);
-	// 添加向量到图元
-	EmitVertex();
+	build_house(gl_in[0].gl_Position);
+}
 
-	gl_Position = gl_in[0].gl_Position + vec4(0.1, 0.0, 0.0, 0.0);
-	EmitVertex();
-	
-	// 生成图元
-	EndPrimitive();
+void build_house(vec4 position)
+{
+	gl_Position = position + vec4(-0.2, -0.2, 0.0, 0.0);    // 1:左下
+    EmitVertex();   
+    gl_Position = position + vec4( 0.2, -0.2, 0.0, 0.0);    // 2:右下
+    EmitVertex();
+    gl_Position = position + vec4(-0.2,  0.2, 0.0, 0.0);    // 3:左上
+    EmitVertex();
+    gl_Position = position + vec4( 0.2,  0.2, 0.0, 0.0);    // 4:右上
+    EmitVertex();
+    gl_Position = position + vec4( 0.0,  0.4, 0.0, 0.0);    // 5:顶部
+    EmitVertex();
+    EndPrimitive();
 }
