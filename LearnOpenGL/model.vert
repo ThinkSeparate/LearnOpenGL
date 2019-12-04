@@ -9,17 +9,19 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-// 输出值
-out vec2 TexCoords;
-out vec3 Normal;
-out vec3 Position;
+out VS_OUT {
+	// 输出值
+	vec2 TexCoords;
+	vec3 Normal;
+	vec3 Position;
+} vs_out;
 
 void main()
 {
 	// 计算顶点position
 	gl_Position = projection * view * model * vec4(aPos, 1.0f);
 	// 输出UV坐标
-	TexCoords = aTexCoords;
-	Normal = mat3(transpose(inverse(model))) * aNormal;
-    Position = vec3(model * vec4(aPos, 1.0));
+	vs_out.TexCoords = aTexCoords;
+	vs_out.Normal = mat3(transpose(inverse(model))) * aNormal;
+    vs_out.Position = vec3(model * vec4(aPos, 1.0));
 };

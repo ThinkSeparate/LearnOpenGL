@@ -147,6 +147,7 @@
     <None Include="model.frag" />
     <None Include="light.frag" />
     <None Include="light.vert" />
+    <None Include="model.geom" />
     <None Include="model.vert" />
     <None Include="outline.frag" />
     <None Include="outline.vert" />
