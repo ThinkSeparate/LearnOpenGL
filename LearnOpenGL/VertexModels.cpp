@@ -66,15 +66,7 @@ void VertexModels::DrawSkyBox(Shader shader)
 void VertexModels::DrawPoints(Shader shader)
 {
 	glBindVertexArray(pointVAO);
-	glDrawArrays(GL_POINTS, 0, 2);
-	// 使用线框模式绘制
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glDrawArrays(GL_POINTS, 2, 1);
-	// 使用点模式绘制
-	glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-	glDrawArrays(GL_POINTS, 3, 1);
-	// 切回填充模式
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDrawArrays(GL_POINTS, 0, 4);
 }
 
 void VertexModels::InitBoxes()
@@ -299,18 +291,20 @@ void VertexModels::InitSkyBox()
 void VertexModels::InitPoints()
 {
 	float points[] = {
-	-0.5f,  0.5f, // 左上
-	 0.5f,  0.5f, // 右上
-	 0.5f, -0.5f, // 右下
-	-0.5f, -0.5f  // 左下
+		-0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // 左上
+		 0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // 右上
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // 右下
+		-0.5f, -0.5f, 1.0f, 1.0f, 0.0f  // 左下
 	};
 	glGenVertexArrays(1, &pointVAO);
 	glGenBuffers(1, &pointVBO);
 	glBindVertexArray(pointVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 }
