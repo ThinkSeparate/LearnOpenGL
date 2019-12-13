@@ -52,6 +52,8 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// 使用核心模式
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	// 开启抗锯齿
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// 创建一个800x600的窗口，窗口标题为LearnOpenGL
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -111,10 +113,12 @@ int main() {
 
 	// 创建帧缓冲
 	FrameBuffer frameBuff(READ_ADN_DRAW, SCR_WIDTH, SCR_HEIGHT, true, true, true);
-	frameBuff.Bind();
 
 	shader.Use();
 	shader.setInt("texture1", 0);
+
+	// 显示调用，让OpenGL开启多重采样
+	glEnable(GL_MULTISAMPLE);
 
 	// 技术测试
 	TechnologyTest technologyTest;
@@ -131,7 +135,7 @@ int main() {
 		// 输入
 		processInput(window);
 
-		frameBuff.Bind();
+		//frameBuff.Bind();
 
 		// 启用深度测试，解决绘制物体穿模问题,这个实际只需要执行一次就可以了，只有在不断切换开启和关闭状态时才需要不断变换
 		glEnable(GL_DEPTH_TEST);
@@ -219,16 +223,16 @@ int main() {
 		//pointsShader.Use();
 		//vertexModels.DrawPoints(pointsShader);
 
-		frameBuff.Unbind();
+		//frameBuff.Unbind();
 
 		// 清除颜色
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT);
 
-		screenShader.Use();
-		glDisable(GL_DEPTH_TEST);
-		glBindTexture(GL_TEXTURE_2D, frameBuff.getTexture());
-		vertexModels.DrawScreen(screenShader);
+		//screenShader.Use();
+		//glDisable(GL_DEPTH_TEST);
+		//glBindTexture(GL_TEXTURE_2D, frameBuff.getTexture());
+		//vertexModels.DrawScreen(screenShader);
 
 		// 交换颜色缓冲，用来绘制（交换是因为双缓冲）
 		glfwSwapBuffers(window);
