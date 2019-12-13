@@ -110,6 +110,12 @@
     <None Include="model.geom">
       <Filter>shader</Filter>
     </None>
+    <None Include="box.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="box.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
