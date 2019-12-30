@@ -19,20 +19,33 @@ class FrameBuffer
 {
 public:
 	// 深度和模板默认设置为false
-	FrameBuffer(FRAME_BUFFER_TYPE type, int width, int height, bool colorBuffer, bool depthBuffer = false, bool stencilBuffer = false);
+	FrameBuffer(FRAME_BUFFER_TYPE type, int width, int height, bool colorBuffer, bool depthBuffer = false, bool stencilBuffer = false, bool mass = false, int smaples = 0);
 	void Bind();
 	void Unbind();
 	unsigned int getTexture();
 private:
+	FRAME_BUFFER_TYPE type;
 	int width;
 	int height;
+	bool colorBuffer;
+	bool depthBuffer;
+	bool stencilBuffer;
+	bool mass;
+	int samples;
 	unsigned int frameBuffer;
+	unsigned int multiFrameBuffer;
 	unsigned int colorTexture;
+	unsigned int multiColorTexture;
 	// 如果你不需要从一个缓冲中采样数据，那么对这个缓冲使用渲染缓冲对象会是明智的选择。如果你需要从缓冲中采样颜色或深度值等数据，那么你应该选择纹理附件
 	unsigned int renderBufferObject;
+	unsigned int multiRenderBufferObject;
+	void createFrameBuffer();
+	void createMultiFrameBuffer();
 	void attachColorBuffer();
+	void attachMultiColorBuffer();
 	void attachDepthBuffer();
 	void attachStencilBuffer();
 	void attachRenderBufferObject();
+	void attachMultiRenderBufferObject();
 };
 
