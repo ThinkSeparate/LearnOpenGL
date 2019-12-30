@@ -89,6 +89,8 @@ int main() {
 	Shader pointsShader("geometric.vert", "geometric.geom", "geometric.frag");
 	// 创建盒子的shader
 	Shader boxShader("box.vert", "box.frag");
+	// 创建长方形的shader
+	Shader quadShader("quad.vert", "quad.frag");
 
 	// 顶点模型对象们
 	VertexModels vertexModels;
@@ -165,16 +167,20 @@ int main() {
 		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		
 		// 绘制盒子
-		boxShader.Use();
-		boxShader.setMatrix4("view", glm::value_ptr(view));
-		boxShader.setMatrix4("projection", glm::value_ptr(projection));
+		//boxShader.Use();
+		//boxShader.setMatrix4("view", glm::value_ptr(view));
+		//boxShader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制盒子
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		boxShader.setMatrix4("model", glm::value_ptr(model));
-		boxShader.setFloat("color", 0.0f, 1.0f, 0.0f);
-		vertexModels.DrawBox(boxShader);
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		//boxShader.setMatrix4("model", glm::value_ptr(model));
+		//boxShader.setFloat("color", 0.0f, 1.0f, 0.0f);
+		//vertexModels.DrawBox(boxShader);
+
+		// 绘制100个小图
+		quadShader.Use();
+		vertexModels.DrawQuads(quadShader);
 
 		// 使用着色器
 		shader.Use();

@@ -16,6 +16,7 @@ VertexModels::VertexModels()
 	InitScreen();
 	InitSkyBox();
 	InitPoints();
+	InitQuads();
 }
 
 void VertexModels::DrawBox(Shader shader)
@@ -75,6 +76,20 @@ void VertexModels::DrawPoints(Shader shader)
 {
 	glBindVertexArray(pointVAO);
 	glDrawArrays(GL_POINTS, 0, 4);
+}
+
+void VertexModels::DrawQuads(Shader shader)
+{
+	for (unsigned int i = 0; i < 100; i++)
+	{
+		stringstream ss;
+		string index;
+		ss << i;
+		index = ss.str();
+		shader.setFloat(("offsets[" + index + "]").c_str(), translations[i]);
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 }
 
 void VertexModels::InitBox()
@@ -371,4 +386,42 @@ void VertexModels::InitPoints()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+}
+
+void VertexModels::InitQuads()
+{
+	float quadVertices[] = {
+		// Î»ÖÃ          // ÑÕÉ«
+		-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+		 0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+		-0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+
+		-0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
+		 0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
+		 0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+	};
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
+	int index = 0;
+	float offset = 0.1f;
+	for (int y = -10; y < 10; y += 2)
+	{
+		for (int x = -10; x < 10; x += 2)
+		{
+			glm::vec2 translation;
+			translation.x = (float)x / 10.0f + offset;
+			translation.y = (float)y / 10.0f + offset;
+			translations[index++] = translation;
+		}
+	}
 }

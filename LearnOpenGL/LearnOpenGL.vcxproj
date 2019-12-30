@@ -153,6 +153,8 @@
     <None Include="model.vert" />
     <None Include="outline.frag" />
     <None Include="outline.vert" />
+    <None Include="quad.frag" />
+    <None Include="quad.vert" />
     <None Include="screen.frag" />
     <None Include="screen.vert" />
     <None Include="skybox.frag" />

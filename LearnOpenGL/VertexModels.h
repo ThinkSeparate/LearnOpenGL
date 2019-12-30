@@ -24,10 +24,12 @@ public:
 	void DrawScreen(Shader shader);
 	void DrawSkyBox(Shader shader);
 	void DrawPoints(Shader shader);
+	void DrawQuads(Shader shader);
 private:
 	TextureLoader textureLoader;
 	glm::mat4 model;
 	vector<glm::vec3> vegetation;
+	glm::vec2 translations[100];
 	unsigned int boxVAO, boxVBO;
 	unsigned int cubeVAO, cubeVBO;
 	unsigned int vegetationVAO, vegetationVBO;
@@ -35,6 +37,7 @@ private:
 	unsigned int screenVAO, screenVBO;
 	unsigned int skyVAO, skyVBO;
 	unsigned int pointVAO, pointVBO;
+	unsigned int quadVAO, quadVBO;
 	void InitBox();
 	void InitBoxes();
 	void InitGrass();
@@ -42,5 +45,6 @@ private:
 	void InitScreen();
 	void InitSkyBox();
 	void InitPoints();
+	void InitQuads();
 };
 

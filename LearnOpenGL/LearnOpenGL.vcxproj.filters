@@ -116,6 +116,12 @@
     <None Include="box.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="quad.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="quad.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
