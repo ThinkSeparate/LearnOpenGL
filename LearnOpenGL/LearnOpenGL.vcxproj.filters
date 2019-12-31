@@ -122,10 +122,16 @@
     <None Include="quad.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="astronomical.vert">
+    <None Include="planet.vert">
       <Filter>shader</Filter>
     </None>
-    <None Include="astronomical.frag">
+    <None Include="planet.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="rock.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="rock.frag">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

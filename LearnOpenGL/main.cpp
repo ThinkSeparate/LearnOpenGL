@@ -92,8 +92,10 @@ int main() {
 	Shader boxShader("box.vert", "box.frag");
 	// 创建长方形的shader
 	Shader quadShader("quad.vert", "quad.frag");
+	// 生成岩石的shader
+	Shader rockShader("rock.vert", "rock.frag");
 	// 生成行星的shader
-	Shader astronomicalShader("astronomical.vert", "astronomical.frag");
+	Shader planetShader("planet.vert", "planet.frag");
 
 	// 顶点模型对象们
 	VertexModels vertexModels;
@@ -120,12 +122,12 @@ int main() {
 
 	Model rock("model/rock/rock.obj");
 
-	unsigned int amount = 1000;
+	unsigned int amount = 100000;
 	glm::mat4* rockMatrices;
 	rockMatrices = new glm::mat4[amount];
 	srand(glfwGetTime());
-	float radius = 50.0;
-	float offset = 2.5f;
+	float radius = 150.0f;
+	float offset = 25.0f;
 	for (unsigned int i = 0; i < amount; i++) {
 		glm::mat4 model;
 		// 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
@@ -148,6 +150,35 @@ int main() {
 
 		// 4. 添加到矩阵的数组中
 		rockMatrices[i] = model;
+	}
+
+	// 创建模型世界矩阵缓冲对象
+	unsigned int rockPosBuffer;
+	glGenBuffers(1, &rockPosBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rockPosBuffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &rockMatrices[0], GL_STATIC_DRAW);
+
+	for (unsigned int i = 0, n = rock.getMeshsSize(); i < n; i++)
+	{
+		unsigned int VAO = rock.getMesh(i).getVAO();
+		glBindVertexArray(VAO);
+		// 顶点属性
+		GLsizei vec4Size = sizeof(glm::vec4);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(vec4Size));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
 	}
 
 	// 创建帧缓冲
@@ -220,23 +251,29 @@ int main() {
 		//quadShader.Use();
 		//vertexModels.DrawQuads(quadShader);
 
-		// 使用天体着色器
-		astronomicalShader.Use();
-		astronomicalShader.setMatrix4("view", glm::value_ptr(view));
-		astronomicalShader.setMatrix4("projection", glm::value_ptr(projection));
+		// 使用行星的着色器
+		planetShader.Use();
+		planetShader.setMatrix4("view", glm::value_ptr(view));
+		planetShader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制行星
 		model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
-		astronomicalShader.setMatrix4("model", glm::value_ptr(model));
-		planet.Draw(astronomicalShader);
+		planetShader.setMatrix4("model", glm::value_ptr(model));
+		planet.Draw(planetShader);
+
+		// 使用岩石的着色器
+		rockShader.Use();
+		rockShader.setMatrix4("view", glm::value_ptr(view));
+		rockShader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制小行星
-		// 绘制小行星
-		for (unsigned int i = 0; i < amount; i++)
+		for (unsigned int i = 0, n = rock.getMeshsSize(); i < n; i++)
 		{
-			astronomicalShader.setMatrix4("model", glm::value_ptr(rockMatrices[i]));
-			rock.Draw(astronomicalShader);
+			glBindVertexArray(rock.getMesh(i).getVAO());
+			glDrawElementsInstanced(
+				GL_TRIANGLES, rock.getMesh(i).indices.size(), GL_UNSIGNED_INT, 0, amount
+			);
 		}
 
 		// 使用着色器

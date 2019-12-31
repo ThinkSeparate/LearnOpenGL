@@ -19,6 +19,9 @@ class Model
 public:
 	Model(string path);
 	void Draw(Shader shader);
+	vector<Mesh> getMeshs();
+	int getMeshsSize();
+	Mesh getMesh(int index);
 private:
 	/*	模型数据	*/
 	vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.

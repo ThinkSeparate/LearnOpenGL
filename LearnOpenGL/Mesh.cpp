@@ -9,6 +9,11 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
 	setupMesh();
 }
 
+unsigned int Mesh::getVAO()
+{
+	return VAO;
+}
+
 void Mesh::Draw(Shader shader)
 {
 	unsigned int diffuseNr = 1;

@@ -33,6 +33,7 @@ public:
 	vector<Texture> textures;
 	/*	º¯Êı	*/
 	Mesh(vector<Vertex> vertexes, vector<unsigned int> indices, vector<Texture> textures);
+	unsigned int getVAO();
 	void Draw(Shader shader);
 private:
 	/*	äÖÈ¾Êı¾İ	*/

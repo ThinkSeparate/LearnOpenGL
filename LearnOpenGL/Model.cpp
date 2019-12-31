@@ -13,6 +13,21 @@ void Model::Draw(Shader shader)
 	}
 }
 
+vector<Mesh> Model::getMeshs()
+{
+	return meshes;
+}
+
+int Model::getMeshsSize()
+{
+	return meshes.size();
+}
+
+Mesh Model::getMesh(int index)
+{
+	return meshes[index];
+}
+
 void Model::loadModel(string path)
 {
 	// 创建一个加载器

@@ -141,8 +141,8 @@
     <ClCompile Include="VertexModels.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="astronomical.frag" />
-    <None Include="astronomical.vert" />
+    <None Include="rock.frag" />
+    <None Include="rock.vert" />
     <None Include="box.frag" />
     <None Include="box.vert" />
     <None Include="geometric.frag" />
@@ -155,6 +155,8 @@
     <None Include="model.vert" />
     <None Include="outline.frag" />
     <None Include="outline.vert" />
+    <None Include="planet.frag" />
+    <None Include="planet.vert" />
     <None Include="quad.frag" />
     <None Include="quad.vert" />
     <None Include="screen.frag" />
