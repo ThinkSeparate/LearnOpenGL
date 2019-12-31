@@ -33,7 +33,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 //----定义全局变量
 // 摄像机
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+//Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 55.0f));
 // 用来计算鼠标的偏移量，初始值设置为屏幕中心
 float lastX = SCR_WIDTH/2.0f, lastY = SCR_HEIGHT/2.0f;
 // 声明一个变量，用来解决第一次进入窗口，偏移量计算过大问题
@@ -91,6 +92,8 @@ int main() {
 	Shader boxShader("box.vert", "box.frag");
 	// 创建长方形的shader
 	Shader quadShader("quad.vert", "quad.frag");
+	// 生成行星的shader
+	Shader astronomicalShader("astronomical.vert", "astronomical.frag");
 
 	// 顶点模型对象们
 	VertexModels vertexModels;
@@ -112,6 +115,40 @@ int main() {
 	unsigned int skyTexture = textureLoader.loadSkyBox(faces);
 
 	Model nanosuit("model/nanosuit/nanosuit.obj");
+
+	Model planet("model/planet/planet.obj");
+
+	Model rock("model/rock/rock.obj");
+
+	unsigned int amount = 1000;
+	glm::mat4* rockMatrices;
+	rockMatrices = new glm::mat4[amount];
+	srand(glfwGetTime());
+	float radius = 50.0;
+	float offset = 2.5f;
+	for (unsigned int i = 0; i < amount; i++) {
+		glm::mat4 model;
+		// 1. 位移：分布在半径为 'radius' 的圆形上，偏移的范围是 [-offset, offset]
+		float angle = (float)i / (float)amount * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cos(angle) * radius + displacement;
+		model = glm::translate(model, glm::vec3(x, y, z));
+
+		// 2. 缩放：在 0.05 和 0.25f 之间缩放
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		model = glm::scale(model, glm::vec3(scale));
+
+		// 3. 旋转：绕着一个（半）随机选择的旋转轴向量进行随机的旋转
+		float rotAngle = (rand() % 360);
+		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+
+		// 4. 添加到矩阵的数组中
+		rockMatrices[i] = model;
+	}
 
 	// 创建帧缓冲
 	FrameBuffer frameBuff(READ_ADN_DRAW, SCR_WIDTH, SCR_HEIGHT, true, true, true, true, 8);
@@ -164,7 +201,8 @@ int main() {
 
 		// 创建投影矩阵
 		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		//projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(camera.getZoom()), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
 		
 		// 绘制盒子
 		//boxShader.Use();
@@ -179,13 +217,32 @@ int main() {
 		//vertexModels.DrawBox(boxShader);
 
 		// 绘制100个小图
-		quadShader.Use();
-		vertexModels.DrawQuads(quadShader);
+		//quadShader.Use();
+		//vertexModels.DrawQuads(quadShader);
+
+		// 使用天体着色器
+		astronomicalShader.Use();
+		astronomicalShader.setMatrix4("view", glm::value_ptr(view));
+		astronomicalShader.setMatrix4("projection", glm::value_ptr(projection));
+
+		// 绘制行星
+		model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+		astronomicalShader.setMatrix4("model", glm::value_ptr(model));
+		planet.Draw(astronomicalShader);
+
+		// 绘制小行星
+		// 绘制小行星
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			astronomicalShader.setMatrix4("model", glm::value_ptr(rockMatrices[i]));
+			rock.Draw(astronomicalShader);
+		}
 
 		// 使用着色器
-		shader.Use();
-		shader.setMatrix4("view", glm::value_ptr(view));
-		shader.setMatrix4("projection", glm::value_ptr(projection));
+		//shader.Use();
+		//shader.setMatrix4("view", glm::value_ptr(view));
+		//shader.setMatrix4("projection", glm::value_ptr(projection));
 
 		// 绘制纳米人
 		//glBindTexture(GL_TEXTURE_CUBE_MAP, skyTexture);

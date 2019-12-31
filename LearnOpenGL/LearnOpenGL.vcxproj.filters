@@ -122,6 +122,12 @@
     <None Include="quad.frag">
       <Filter>shader</Filter>
     </None>
+    <None Include="astronomical.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="astronomical.frag">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
